@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Intermediate test files
+*.gcda
+*.gcno
+run_test
+*-Results.xml
