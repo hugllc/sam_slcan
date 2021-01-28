@@ -36,3 +36,4 @@
 *.gcno
 run_test
 *-Results.xml
+build/
