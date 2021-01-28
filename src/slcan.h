@@ -27,7 +27,7 @@ bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
  */
 static inline bool isPacket(uint8_t *buf, uint8_t length)
 {
-    return (length > 0) && (buf[length - 1] == '\r');
+    return (length > 0) && (buf != NULL) && (buf[length - 1] == '\r');
 }
 
 /**
@@ -40,7 +40,7 @@ static inline bool isPacket(uint8_t *buf, uint8_t length)
  */
 static inline bool isCANFrame(uint8_t *buf, uint8_t length)
 {
-    return (length > 0) && ((buf[0] == 't') || (buf[0] == 'T') || (buf[0] == 'r') || (buf[0] == 'R'));
+    return (length > 0) && (buf != NULL) && ((buf[0] == 't') || (buf[0] == 'T') || (buf[0] == 'r') || (buf[0] == 'R'));
 }
 
 

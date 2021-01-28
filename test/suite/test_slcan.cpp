@@ -19,6 +19,7 @@
 
 uint8_t parseDigit(uint8_t digit);
 uint32_t parseNumber(uint8_t *buf, uint8_t length);
+bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data);
 
 FCTMF_FIXTURE_SUITE_BGN(test_slcan)
 {
@@ -70,6 +71,19 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
     }
     FCT_TEST_END()
 
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(isPacket: Deals with a NULL buffer) {
+        bool ret, expect;
+        ret = isPacket(NULL, 5);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+
     /************************************************** isCANFrame() ******************************************************/
     /**
      * @brief Test
@@ -81,6 +95,18 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         bool ret, expect;
         memset(buffer, 0, sizeof(buffer));
         ret = isCANFrame(buffer, 0);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(isCANFrame: Deals with a NULL buffer) {
+        bool ret, expect;
+        ret = isCANFrame(NULL, 5);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -468,6 +494,82 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
     FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseNumber: returns correctly for a NULL buffer) {
+        uint32_t ret, expect;
+        ret = parseNumber(NULL, 5);
+        expect = 0;
+        fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
+    }
+    FCT_TEST_END()
+
+    /************************************************** parseByteData() ******************************************************/
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseByteData: returns correctly for '1234') {
+        uint8_t have[] = { '1', '2', '3', '4' };
+        uint8_t expect[] = { 0x12, 0x34 };
+        uint8_t got[sizeof(have)];
+        bool ret, retexpect = true;
+        uint8_t i;
+        memset(got, 0, sizeof(got));
+        ret = parseByteData((uint8_t *)have, sizeof(have), got);
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        for (i = 0; i < sizeof(expect); i++) {
+            fct_xchk(got[i] == expect[i], "Element %u: Expected %u got %u", i, expect[i], got[i]);
+        }
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseByteData: deals with an odd number of characters) {
+        uint8_t have[] = { '1', '2', '3', '4', '5' };
+        uint8_t expect[] = { 0x12, 0x34 };
+        uint8_t got[sizeof(have)];
+        bool ret, retexpect = true;
+        uint8_t i;
+        memset(got, 0, sizeof(got));
+        ret = parseByteData((uint8_t *)have, sizeof(have), got);
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        for (i = 0; i < sizeof(expect); i++) {
+            fct_xchk(got[i] == expect[i], "Element %u: Expected %u got %u", i, expect[i], got[i]);
+        }
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseByteData: deals with a NULL buffer) {
+        uint8_t got[10];
+        bool ret, retexpect = false;
+        ret = parseByteData(NULL, sizeof(got), got);
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseByteData: deals with a NULL data array) {
+        uint8_t got[] = { '1', '2', '3', '4' };
+        bool ret, retexpect = false;
+        ret = parseByteData(got, sizeof(got), NULL);
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
 
     /************************************************** parseCANFrame() ******************************************************/
     /**
@@ -480,6 +582,32 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         bool ret, expect;
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when buffer is NULL) {
+        CANFrame frame;
+        bool ret, expect;
+        ret = parseCANFrame(NULL, 5, &frame);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when frame is NULL) {
+        uint8_t buffer[] = { '1', '2' };
+        bool ret, expect;
+        ret = parseCANFrame(buffer, sizeof(buffer), NULL);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
