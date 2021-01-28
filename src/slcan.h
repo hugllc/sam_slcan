@@ -15,7 +15,7 @@ typedef struct {
 } CANFrame;
 
 
-bool parseDataFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
+bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 
 /**
  * Checks if this is a complete packet or not.  A complete packet ends with '\r'
@@ -28,6 +28,19 @@ bool parseDataFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 static inline bool isPacket(uint8_t *buf, uint8_t length)
 {
     return (length > 0) && (buf[length - 1] == '\r');
+}
+
+/**
+ * Checks if this is a complete packet or not.  A complete packet ends with '\r'
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * 
+ * @return True if this is a full packet false otherwise
+ */
+static inline bool isCANFrame(uint8_t *buf, uint8_t length)
+{
+    return (length > 0) && ((buf[0] == 't') || (buf[0] == 'T') || (buf[0] == 'r') || (buf[0] == 'R'));
 }
 
 

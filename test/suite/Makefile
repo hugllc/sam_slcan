@@ -60,7 +60,7 @@ $(TARGET).o : $(TARGET).cpp $(TARGET).h
 	$(GPP) $(CFLAGS_TEST) -c $< -o $@
 
 %.o : %.c %.h
-	$(GCC) $(CFLAGS_TEST) -c $< -o $@
+	$(GPP) $(CFLAGS_TEST) -c $< -o $@
 
 clean:
 	rm -f *~ *.o run_test *.gcda *.gcno *Results.xml *.orig
