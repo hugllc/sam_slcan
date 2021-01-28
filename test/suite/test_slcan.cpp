@@ -17,6 +17,16 @@
 #include "fct.h"
 #include "slcan.h"
 
+#define CheckFrame(got, expect, iter) \
+    fct_xchk(got.rtr == expect.rtr, "rtr: Expected %s got %s", expect.rtr ? "TRUE" : "FALSE", got.rtr ? "TRUE" : "FALSE"); \
+    fct_xchk(got.ext == expect.ext, "ext: Expected %s got %s", expect.ext ? "TRUE" : "FALSE", got.ext ? "TRUE" : "FALSE"); \
+    fct_xchk(got.id == expect.id, "id: Expected %u got %u", expect.id, got.id); \
+    fct_xchk(got.length == expect.length, "length: Expected %u got %u", expect.length, got.length); \
+    fct_xchk(got.timestamp == expect.timestamp, "id: Expected %u got %u", expect.timestamp, got.timestamp); \
+    for (iter = 0; iter < got.length; iter++) { \
+        fct_xchk(got.data[iter] == expect.data[iter], "data[%u]: Expected %u got %u", iter, expect.data[iter], got.data[iter]); \
+    }
+
 uint8_t parseDigit(uint8_t digit);
 uint32_t parseNumber(uint8_t *buf, uint8_t length);
 bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data);
@@ -591,6 +601,20 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
+    FCT_TEST_BGN(parseCANFrame: returns false when length is 4) {
+        uint8_t buffer[] = { 'T', '1', '2', '3' };
+        CANFrame frame;
+        bool ret, expect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
     FCT_TEST_BGN(parseCANFrame: returns false when buffer is NULL) {
         CANFrame frame;
         bool ret, expect;
@@ -619,11 +643,21 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      */
     FCT_TEST_BGN(parseCANFrame: normal packet parses properly) {
         uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
+        CANFrame expect = {
+            .id = 0x123,
+            .length = 8,
+            .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
+            .ext = false,
+            .rtr = false,
+            .timestamp = 0
+        };
         CANFrame frame;
-        bool ret, expect;
+        uint8_t i;
+        bool ret, retexpect;
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
-        expect = true;
-        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
     }
     FCT_TEST_END()
     /**
@@ -633,11 +667,21 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      */
     FCT_TEST_BGN(parseCANFrame: extended packet parses properly) {
         uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
+        CANFrame expect = {
+            .id = 0x12345678,
+            .length = 8,
+            .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
+            .ext = true,
+            .rtr = false,
+            .timestamp = 0
+        };
         CANFrame frame;
-        bool ret, expect;
+        uint8_t i;
+        bool ret, retexpect;
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
-        expect = true;
-        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
     }
     FCT_TEST_END()
     /**
@@ -646,12 +690,22 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      * @return void
      */
     FCT_TEST_BGN(parseCANFrame: normal RTR packet parses properly) {
-        uint8_t buffer[] = { 't', '1', '2', '3', '8', '\r' };
+        uint8_t buffer[] = { 'r', '1', '2', '3', '8', '\r' };
+        CANFrame expect = {
+            .id = 0x123,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = false,
+            .rtr = true,
+            .timestamp = 0
+        };
         CANFrame frame;
-        bool ret, expect;
+        uint8_t i;
+        bool ret, retexpect;
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
-        expect = true;
-        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
     }
     FCT_TEST_END()
     /**
@@ -661,11 +715,21 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      */
     FCT_TEST_BGN(parseCANFrame: extended RTR packet parses properly) {
         uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '8', '\r' };
+        CANFrame expect = {
+            .id = 0x12345678,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = true,
+            .rtr = true,
+            .timestamp = 0
+        };
         CANFrame frame;
-        bool ret, expect;
+        bool ret, retexpect;
+        uint8_t i;
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
-        expect = true;
-        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
     }
     FCT_TEST_END()
 

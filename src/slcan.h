@@ -4,6 +4,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <string.h>
 
 typedef struct {
     uint32_t id;
@@ -42,6 +43,21 @@ static inline bool isCANFrame(uint8_t *buf, uint8_t length)
 {
     return (length > 0) && (buf != NULL) && ((buf[0] == 't') || (buf[0] == 'T') || (buf[0] == 'r') || (buf[0] == 'R'));
 }
+
+/**
+ * Initializes a frame struct
+ * 
+ * @param frame The frame to initialize
+ * 
+ * @return True if this is a full packet false otherwise
+ */
+static inline void initCANFrame(CANFrame *frame)
+{
+    if (frame != NULL) {
+        memset(frame, 0, sizeof(CANFrame));
+    }
+}
+
 
 
 #endif // SLCAN_H

@@ -1,6 +1,8 @@
 
 #include "slcan.h"
 
+#define EXT_ID_MASK 0x1FFFFFFF
+#define ID_MASK 0x7FF
 /**
  * Parses a single text digit and returns the value
  * 
@@ -77,17 +79,40 @@ bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data)
  */
 bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
 {
+    initCANFrame(frame);
     if ((length < 5) || (buf == NULL) || (frame == NULL)) {
         // Packet Too Short
         return false;
     }
     if ((buf[0] == 'T') && (length >= 10)) {
-        return true;
+        frame->ext = true;
+        frame->rtr = false;
+        frame->id = parseNumber(&buf[1], 8) & EXT_ID_MASK;
+        frame->length = (uint8_t)parseNumber(&buf[9], 1);
+        if (length > (frame->length + 10)) {
+            return parseByteData(&buf[10], frame->length * 2, frame->data);
+        }
+        return false;
     } else if ((buf[0] == 'R') && (length >= 10)) {
+        frame->ext = true;
+        frame->rtr = true;
+        frame->id = parseNumber(&buf[1], 8) & EXT_ID_MASK;
+        frame->length = (uint8_t)parseNumber(&buf[9], 1);
         return true;
     } else if (buf[0] == 't') {
-        return true;
+        frame->ext = false;
+        frame->rtr = false;
+        frame->id = parseNumber(&buf[1], 3) & ID_MASK;
+        frame->length = (uint8_t)parseNumber(&buf[4], 1);
+        if (length > (frame->length + 5)) {
+            return parseByteData(&buf[5], frame->length * 2, frame->data);
+        }
+        return false;
     } else if (buf[0] == 'r') {
+        frame->ext = false;
+        frame->rtr = true;
+        frame->id = parseNumber(&buf[1], 3) & ID_MASK;
+        frame->length = (uint8_t)parseNumber(&buf[4], 1);
         return true;
     }
     return false;
