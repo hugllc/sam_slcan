@@ -27,6 +27,11 @@
         fct_xchk(got.data[iter] == expect.data[iter], "data[%u]: Expected %u got %u", iter, expect.data[iter], got.data[iter]); \
     }
 
+#define CheckSLCommand(got, expect) \
+    fct_xchk(got.type == expect.type, "type: Expected %u got %u", expect.type, got.type); \
+    fct_xchk(got.data == expect.data, "data: Expected %u got %u", expect.data, got.data); \
+    fct_xchk(got.cmd == expect.cmd, "cmd: Expected %u got %u", expect.cmd, got.cmd);
+
 uint8_t parseDigit(uint8_t digit);
 uint32_t parseNumber(uint8_t *buf, uint8_t length);
 bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data);
@@ -882,6 +887,167 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         ret = parseCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /************************************************** parseSLCommand() ******************************************************/
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when length is 0) {
+        uint8_t buffer[] = {};
+        SLCommand cmd;
+        bool ret, expect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &cmd);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when buffer is NULL) {
+        SLCommand cmd;
+        bool ret, expect;
+        ret = parseSLCommand(NULL, 5, &cmd);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when cmd is NULL) {
+        uint8_t buffer[] = {};
+        bool ret, expect;
+        ret = parseSLCommand(buffer, sizeof(buffer), NULL);
+        expect = false;
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when bad command is given) {
+        uint8_t buffer[] = { 'Q', '\r' };
+        SLCommand expect = {
+            .type = Bad,
+            .data = 0,
+            .cmd = 'Q'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns true when open command is given) {
+        uint8_t buffer[] = { 'O', '\r' };
+        SLCommand expect = {
+            .type = Open,
+            .data = 0,
+            .cmd = 'O'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns true when close command is given) {
+        uint8_t buffer[] = { 'C', '\r' };
+        SLCommand expect = {
+            .type = Close,
+            .data = 0,
+            .cmd = 'C'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns true when listen command is given) {
+        uint8_t buffer[] = { 'L', '\r' };
+        SLCommand expect = {
+            .type = Listen,
+            .data = 0,
+            .cmd = 'L'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns false when bad speed command is given) {
+        uint8_t buffer[] = { 'S', '\r' };
+        SLCommand expect = {
+            .type = Bad,
+            .data = 0,
+            .cmd = 'S'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: returns true when speed command is given) {
+        uint8_t buffer[] = { 'S', '1', '\r' };
+        SLCommand expect = {
+            .type = Speed,
+            .data = 1,
+            .cmd = 'S'
+        };
+        SLCommand got;
+        bool ret, retexpect;
+        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLCommand(got, expect);
     }
     FCT_TEST_END()
 

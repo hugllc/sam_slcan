@@ -118,3 +118,47 @@ bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
     }
     return false;
 }
+
+/**
+ * 
+ * This parses a SL Command
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * @param cmd    The command struct to put the data into
+ * 
+ * @return True if this was successfully parsed, false otherwise
+ */
+bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
+{
+    if ((length == 0) || (buf == NULL) || (cmd == NULL)) {
+        // Packet Too Short
+        return false;
+    }
+    cmd->cmd = buf[0];
+    cmd->type = Bad;
+    cmd->data = 0;
+    switch (buf[0]) {
+        case 'O':    // Open
+            cmd->type = Open;
+            cmd->data = 0;
+            break;
+        case 'C':    // Close
+            cmd->type = Close;
+            cmd->data = 0;
+            break;
+        case 'L':    // Listen
+            cmd->type = Listen;
+            cmd->data = 0;
+            break;
+        case 'S':    // Speed
+            if ((length > 1) && (buf[1] != '\r')) {
+                cmd->type = Speed;
+                cmd->data = parseNumber(&buf[1], 1);
+            }
+            break;
+        default:
+            break;
+    }
+    return cmd->type != Bad;
+}

@@ -6,6 +6,14 @@
 #include <stdbool.h>
 #include <string.h>
 
+typedef enum {
+    Open,
+    Close,
+    Listen,
+    Speed,
+    Bad
+} SLCommandType;
+
 typedef struct {
     uint32_t id;
     uint8_t length;
@@ -15,8 +23,15 @@ typedef struct {
     uint16_t timestamp;
 } CANFrame;
 
+typedef struct {
+    SLCommandType type;
+    uint32_t data;
+    char cmd;
+} SLCommand;
+
 
 bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
+bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
 
 /**
  * Checks if this is a complete packet or not.  A complete packet ends with '\r'
