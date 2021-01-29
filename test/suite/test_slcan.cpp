@@ -732,6 +732,158 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CheckFrame(frame, expect, i);
     }
     FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short) {
+        uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7' };
+        CANFrame expect = {
+            .id = 0x12345678,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = true,
+            .rtr = false,
+            .timestamp = 0
+        };
+        CANFrame frame;
+        uint8_t i;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short) {
+        uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7' };
+        CANFrame expect = {
+            .id = 0x123,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = false,
+            .rtr = false,
+            .timestamp = 0
+        };
+        CANFrame frame;
+        uint8_t i;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short) {
+        uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8' };
+        CANFrame frame;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short) {
+        uint8_t buffer[] = { 'r', '1', '2', '3' };
+        CANFrame frame;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short w/ \\r) {
+        uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '\r' };
+        CANFrame expect = {
+            .id = 0x12345678,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = true,
+            .rtr = false,
+            .timestamp = 0
+        };
+        CANFrame frame;
+        uint8_t i;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short w/ \\r) {
+        uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '\r' };
+        CANFrame expect = {
+            .id = 0x123,
+            .length = 8,
+            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+            .ext = false,
+            .rtr = false,
+            .timestamp = 0
+        };
+        CANFrame frame;
+        uint8_t i;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckFrame(frame, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short w/ \\r) {
+        uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '\r' };
+        CANFrame frame;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short w/ \\r) {
+        uint8_t buffer[] = { 'r', '1', '2', '3', '\r' };
+        CANFrame frame;
+        bool ret, retexpect;
+        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        retexpect = false;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
 
 }
 FCTMF_FIXTURE_SUITE_END();
