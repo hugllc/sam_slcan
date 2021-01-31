@@ -37,10 +37,10 @@
         fct_xchk(expect[iter] == got[iter], "Index %u: Expected %u got %u", iter, expect[iter], got[iter]); \
     }
 
-uint8_t parseDigit(uint8_t digit);
+uint8_t decodeDigit(uint8_t digit);
 uint8_t encodeDigit(uint8_t digit);
-uint32_t parseNumber(uint8_t *buf, uint8_t length);
-bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data);
+uint32_t decodeNumber(uint8_t *buf, uint8_t length);
+bool decodeByteData(uint8_t *buf, uint8_t length, uint8_t *data);
 
 FCTMF_FIXTURE_SUITE_BGN(test_slcan)
 {
@@ -186,15 +186,15 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
-    /************************************************** parseDigit() ******************************************************/
+    /************************************************** decodeDigit() ******************************************************/
     /**
      * @brief Test
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '0') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '0') {
         uint8_t ret, expect;
-        ret = parseDigit('0');
+        ret = decodeDigit('0');
         expect = 0;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -204,9 +204,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '1') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '1') {
         uint8_t ret, expect;
-        ret = parseDigit('1');
+        ret = decodeDigit('1');
         expect = 1;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -216,9 +216,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '2') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '2') {
         uint8_t ret, expect;
-        ret = parseDigit('2');
+        ret = decodeDigit('2');
         expect = 2;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -228,9 +228,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '3') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '3') {
         uint8_t ret, expect;
-        ret = parseDigit('3');
+        ret = decodeDigit('3');
         expect = 3;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -240,9 +240,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '4') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '4') {
         uint8_t ret, expect;
-        ret = parseDigit('4');
+        ret = decodeDigit('4');
         expect = 4;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -252,9 +252,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '5') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '5') {
         uint8_t ret, expect;
-        ret = parseDigit('5');
+        ret = decodeDigit('5');
         expect = 5;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -264,9 +264,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '6') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '6') {
         uint8_t ret, expect;
-        ret = parseDigit('6');
+        ret = decodeDigit('6');
         expect = 6;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -276,9 +276,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '7') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '7') {
         uint8_t ret, expect;
-        ret = parseDigit('7');
+        ret = decodeDigit('7');
         expect = 7;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -288,9 +288,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '8') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '8') {
         uint8_t ret, expect;
-        ret = parseDigit('8');
+        ret = decodeDigit('8');
         expect = 8;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -300,9 +300,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for '9') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for '9') {
         uint8_t ret, expect;
-        ret = parseDigit('9');
+        ret = decodeDigit('9');
         expect = 9;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -312,9 +312,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'A') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'A') {
         uint8_t ret, expect;
-        ret = parseDigit('A');
+        ret = decodeDigit('A');
         expect = 0xA;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -324,9 +324,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'B') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'B') {
         uint8_t ret, expect;
-        ret = parseDigit('B');
+        ret = decodeDigit('B');
         expect = 0xB;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -336,9 +336,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'C') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'C') {
         uint8_t ret, expect;
-        ret = parseDigit('C');
+        ret = decodeDigit('C');
         expect = 0xC;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -348,9 +348,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'D') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'D') {
         uint8_t ret, expect;
-        ret = parseDigit('D');
+        ret = decodeDigit('D');
         expect = 0xD;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -360,9 +360,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'E') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'E') {
         uint8_t ret, expect;
-        ret = parseDigit('E');
+        ret = decodeDigit('E');
         expect = 0xE;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -372,9 +372,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'F') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'F') {
         uint8_t ret, expect;
-        ret = parseDigit('F');
+        ret = decodeDigit('F');
         expect = 0xF;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -384,9 +384,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'a') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'a') {
         uint8_t ret, expect;
-        ret = parseDigit('a');
+        ret = decodeDigit('a');
         expect = 0xA;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -396,9 +396,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'b') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'b') {
         uint8_t ret, expect;
-        ret = parseDigit('b');
+        ret = decodeDigit('b');
         expect = 0xB;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -408,9 +408,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'c') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'c') {
         uint8_t ret, expect;
-        ret = parseDigit('c');
+        ret = decodeDigit('c');
         expect = 0xC;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -420,9 +420,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'd') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'd') {
         uint8_t ret, expect;
-        ret = parseDigit('d');
+        ret = decodeDigit('d');
         expect = 0xD;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -432,9 +432,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'e') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'e') {
         uint8_t ret, expect;
-        ret = parseDigit('e');
+        ret = decodeDigit('e');
         expect = 0xE;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -444,9 +444,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns correctly for 'f') {
+    FCT_TEST_BGN(decodeDigit: returns correctly for 'f') {
         uint8_t ret, expect;
-        ret = parseDigit('f');
+        ret = decodeDigit('f');
         expect = 0xF;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -456,9 +456,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns 0 for '\r') {
+    FCT_TEST_BGN(decodeDigit: returns 0 for '\r') {
         uint8_t ret, expect;
-        ret = parseDigit('\r');
+        ret = decodeDigit('\r');
         expect = 0;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -468,9 +468,9 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseDigit: returns 0 for '\0') {
+    FCT_TEST_BGN(decodeDigit: returns 0 for '\0') {
         uint8_t ret, expect;
-        ret = parseDigit('\0');
+        ret = decodeDigit('\0');
         expect = 0;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -692,16 +692,16 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
     FCT_TEST_END()
-    /************************************************** parseNumber() ******************************************************/
+    /************************************************** decodeNumber() ******************************************************/
     /**
      * @brief Test
      *
      * @return void
      */
-    FCT_TEST_BGN(parseNumber: returns correctly for '123') {
+    FCT_TEST_BGN(decodeNumber: returns correctly for '123') {
         uint8_t have[] = { '1', '2', '3' };
         uint32_t ret, expect;
-        ret = parseNumber((uint8_t *)have, sizeof(have));
+        ret = decodeNumber((uint8_t *)have, sizeof(have));
         expect = 0x123;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -711,10 +711,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseNumber: returns correctly for a buffer too big) {
+    FCT_TEST_BGN(decodeNumber: returns correctly for a buffer too big) {
         uint8_t have[] = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
         uint32_t ret, expect;
-        ret = parseNumber((uint8_t *)have, sizeof(have));
+        ret = decodeNumber((uint8_t *)have, sizeof(have));
         expect = 0x12345678;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -724,10 +724,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseNumber: returns correctly for a buffer length 0) {
+    FCT_TEST_BGN(decodeNumber: returns correctly for a buffer length 0) {
         uint8_t have[] = {  };
         uint32_t ret, expect;
-        ret = parseNumber((uint8_t *)have, sizeof(have));
+        ret = decodeNumber((uint8_t *)have, sizeof(have));
         expect = 0;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
@@ -737,28 +737,28 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseNumber: returns correctly for a NULL buffer) {
+    FCT_TEST_BGN(decodeNumber: returns correctly for a NULL buffer) {
         uint32_t ret, expect;
-        ret = parseNumber(NULL, 5);
+        ret = decodeNumber(NULL, 5);
         expect = 0;
         fct_xchk(ret == expect, "Expected %d got %d", expect, ret);
     }
     FCT_TEST_END()
 
-    /************************************************** parseByteData() ******************************************************/
+    /************************************************** decodeByteData() ******************************************************/
     /**
      * @brief Test
      *
      * @return void
      */
-    FCT_TEST_BGN(parseByteData: returns correctly for '1234') {
+    FCT_TEST_BGN(decodeByteData: returns correctly for '1234') {
         uint8_t have[] = { '1', '2', '3', '4' };
         uint8_t expect[] = { 0x12, 0x34 };
         uint8_t got[sizeof(have)];
         bool ret, retexpect = true;
         uint8_t i;
         memset(got, 0, sizeof(got));
-        ret = parseByteData((uint8_t *)have, sizeof(have), got);
+        ret = decodeByteData((uint8_t *)have, sizeof(have), got);
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         for (i = 0; i < sizeof(expect); i++) {
             fct_xchk(got[i] == expect[i], "Element %u: Expected %u got %u", i, expect[i], got[i]);
@@ -770,14 +770,14 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseByteData: deals with an odd number of characters) {
+    FCT_TEST_BGN(decodeByteData: deals with an odd number of characters) {
         uint8_t have[] = { '1', '2', '3', '4', '5' };
         uint8_t expect[] = { 0x12, 0x34 };
         uint8_t got[sizeof(have)];
         bool ret, retexpect = true;
         uint8_t i;
         memset(got, 0, sizeof(got));
-        ret = parseByteData((uint8_t *)have, sizeof(have), got);
+        ret = decodeByteData((uint8_t *)have, sizeof(have), got);
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         for (i = 0; i < sizeof(expect); i++) {
             fct_xchk(got[i] == expect[i], "Element %u: Expected %u got %u", i, expect[i], got[i]);
@@ -789,10 +789,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseByteData: deals with a NULL buffer) {
+    FCT_TEST_BGN(decodeByteData: deals with a NULL buffer) {
         uint8_t got[10];
         bool ret, retexpect = false;
-        ret = parseByteData(NULL, sizeof(got), got);
+        ret = decodeByteData(NULL, sizeof(got), got);
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
@@ -801,25 +801,25 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseByteData: deals with a NULL data array) {
+    FCT_TEST_BGN(decodeByteData: deals with a NULL data array) {
         uint8_t got[] = { '1', '2', '3', '4' };
         bool ret, retexpect = false;
-        ret = parseByteData(got, sizeof(got), NULL);
+        ret = decodeByteData(got, sizeof(got), NULL);
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
 
-    /************************************************** parseCANFrame() ******************************************************/
+    /************************************************** decodeCANFrame() ******************************************************/
     /**
      * @brief Test
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when length is 0) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when length is 0) {
         uint8_t buffer[] = {};
         CANFrame frame;
         bool ret, expect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -829,11 +829,11 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when length is 4) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when length is 4) {
         uint8_t buffer[] = { 'T', '1', '2', '3' };
         CANFrame frame;
         bool ret, expect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -843,10 +843,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when buffer is NULL) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when buffer is NULL) {
         CANFrame frame;
         bool ret, expect;
-        ret = parseCANFrame(NULL, 5, &frame);
+        ret = decodeCANFrame(NULL, 5, &frame);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -856,10 +856,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when frame is NULL) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when frame is NULL) {
         uint8_t buffer[] = { '1', '2' };
         bool ret, expect;
-        ret = parseCANFrame(buffer, sizeof(buffer), NULL);
+        ret = decodeCANFrame(buffer, sizeof(buffer), NULL);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -869,7 +869,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: normal packet parses properly) {
+    FCT_TEST_BGN(decodeCANFrame: normal packet decodes properly) {
         uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
         CANFrame expect = {
             .id = 0x123,
@@ -882,7 +882,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -893,7 +893,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: extended packet parses properly) {
+    FCT_TEST_BGN(decodeCANFrame: extended packet decodes properly) {
         uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
         CANFrame expect = {
             .id = 0x12345678,
@@ -906,7 +906,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -917,7 +917,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: normal RTR packet parses properly) {
+    FCT_TEST_BGN(decodeCANFrame: normal RTR packet decodes properly) {
         uint8_t buffer[] = { 'r', '1', '2', '3', '8', '\r' };
         CANFrame expect = {
             .id = 0x123,
@@ -930,7 +930,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -941,7 +941,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: extended RTR packet parses properly) {
+    FCT_TEST_BGN(decodeCANFrame: extended RTR packet decodes properly) {
         uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '8', '\r' };
         CANFrame expect = {
             .id = 0x12345678,
@@ -954,7 +954,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         bool ret, retexpect;
         uint8_t i;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -965,7 +965,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short) {
+    FCT_TEST_BGN(decodeCANFrame: deals with extended packets that are too short) {
         uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7' };
         CANFrame expect = {
             .id = 0x12345678,
@@ -978,7 +978,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -989,7 +989,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short) {
+    FCT_TEST_BGN(decodeCANFrame: deals with normal packets that are too short) {
         uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7' };
         CANFrame expect = {
             .id = 0x123,
@@ -1002,7 +1002,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -1013,11 +1013,11 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short) {
+    FCT_TEST_BGN(decodeCANFrame: deals with extended packets that are too short) {
         uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8' };
         CANFrame frame;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1027,11 +1027,11 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short) {
+    FCT_TEST_BGN(decodeCANFrame: deals with normal packets that are too short) {
         uint8_t buffer[] = { 'r', '1', '2', '3' };
         CANFrame frame;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1041,7 +1041,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short w/ \\r) {
+    FCT_TEST_BGN(decodeCANFrame: deals with extended packets that are too short w/ \\r) {
         uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '\r' };
         CANFrame expect = {
             .id = 0x12345678,
@@ -1054,7 +1054,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -1065,7 +1065,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short w/ \\r) {
+    FCT_TEST_BGN(decodeCANFrame: deals with normal packets that are too short w/ \\r) {
         uint8_t buffer[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '\r' };
         CANFrame expect = {
             .id = 0x123,
@@ -1078,7 +1078,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         CANFrame frame;
         uint8_t i;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckFrame(frame, expect, i);
@@ -1089,11 +1089,11 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with extended packets that are too short w/ \\r) {
+    FCT_TEST_BGN(decodeCANFrame: deals with extended packets that are too short w/ \\r) {
         uint8_t buffer[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '\r' };
         CANFrame frame;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1103,26 +1103,26 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: deals with normal packets that are too short w/ \\r) {
+    FCT_TEST_BGN(decodeCANFrame: deals with normal packets that are too short w/ \\r) {
         uint8_t buffer[] = { 'r', '1', '2', '3', '\r' };
         CANFrame frame;
         bool ret, retexpect;
-        ret = parseCANFrame(buffer, sizeof(buffer), &frame);
+        ret = decodeCANFrame(buffer, sizeof(buffer), &frame);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
-    /************************************************** parseSLCommand() ******************************************************/
+    /************************************************** decodeSLCommand() ******************************************************/
     /**
      * @brief Test
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when length is 0) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when length is 0) {
         uint8_t buffer[] = {};
         SLCommand cmd;
         bool ret, expect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &cmd);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &cmd);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1132,10 +1132,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when buffer is NULL) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when buffer is NULL) {
         SLCommand cmd;
         bool ret, expect;
-        ret = parseSLCommand(NULL, 5, &cmd);
+        ret = decodeSLCommand(NULL, 5, &cmd);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1145,10 +1145,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when cmd is NULL) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when cmd is NULL) {
         uint8_t buffer[] = {};
         bool ret, expect;
-        ret = parseSLCommand(buffer, sizeof(buffer), NULL);
+        ret = decodeSLCommand(buffer, sizeof(buffer), NULL);
         expect = false;
         fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1158,7 +1158,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when bad command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when bad command is given) {
         uint8_t buffer[] = { 'Q', '\r' };
         SLCommand expect = {
             .type = Bad,
@@ -1167,7 +1167,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1178,7 +1178,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns true when open command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns true when open command is given) {
         uint8_t buffer[] = { 'O', '\r' };
         SLCommand expect = {
             .type = Open,
@@ -1187,7 +1187,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1198,7 +1198,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns true when close command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns true when close command is given) {
         uint8_t buffer[] = { 'C', '\r' };
         SLCommand expect = {
             .type = Close,
@@ -1207,7 +1207,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1218,7 +1218,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns true when listen command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns true when listen command is given) {
         uint8_t buffer[] = { 'L', '\r' };
         SLCommand expect = {
             .type = Listen,
@@ -1227,7 +1227,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1238,7 +1238,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns false when bad speed command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns false when bad speed command is given) {
         uint8_t buffer[] = { 'S', '\r' };
         SLCommand expect = {
             .type = Bad,
@@ -1247,7 +1247,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = false;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1258,7 +1258,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(parseCANFrame: returns true when speed command is given) {
+    FCT_TEST_BGN(decodeCANFrame: returns true when speed command is given) {
         uint8_t buffer[] = { 'S', '1', '\r' };
         SLCommand expect = {
             .type = Speed,
@@ -1267,7 +1267,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         };
         SLCommand got;
         bool ret, retexpect;
-        ret = parseSLCommand(buffer, sizeof(buffer), &got);
+        ret = decodeSLCommand(buffer, sizeof(buffer), &got);
         retexpect = true;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
         CheckSLCommand(got, expect);
@@ -1319,7 +1319,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: normal packet parses properly) {
+    FCT_TEST_BGN(encodeCANFrame: normal packet decodes properly) {
         uint8_t expect[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
         CANFrame have = {
             .id = 0x123,
@@ -1343,7 +1343,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: extended packet parses properly) {
+    FCT_TEST_BGN(encodeCANFrame: extended packet decodes properly) {
         uint8_t expect[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
         CANFrame have = {
             .id = 0x12345678,
@@ -1367,7 +1367,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: normal RTR packet parses properly) {
+    FCT_TEST_BGN(encodeCANFrame: normal RTR packet decodes properly) {
         uint8_t expect[] = { 'r', '1', '2', '3', '8', '\r' };
         CANFrame have = {
             .id = 0x123,
@@ -1391,7 +1391,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: extended RTR packet parses properly) {
+    FCT_TEST_BGN(encodeCANFrame: extended RTR packet decodes properly) {
         uint8_t expect[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '8', '\r' };
         CANFrame have = {
             .id = 0x12345678,

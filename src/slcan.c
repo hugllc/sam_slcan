@@ -6,11 +6,11 @@
 /**
  * Parses a single text digit and returns the value
  * 
- * @param digit The character to parse
+ * @param digit The character to decode
  * 
- * @return The value of the digit parsed
+ * @return The value of the digit decoded
  */
-uint8_t parseDigit(uint8_t digit)
+uint8_t decodeDigit(uint8_t digit)
 {
     if ((digit >= 'A') && (digit <= 'F')) {
         return digit - 'A' + 10;
@@ -25,9 +25,9 @@ uint8_t parseDigit(uint8_t digit)
 /**
  * Parses a single text digit and returns the value
  * 
- * @param digit The character to parse
+ * @param digit The character to encode
  * 
- * @return The value of the digit parsed
+ * @return The value of the digit encoded
  */
 uint8_t encodeDigit(uint8_t digit)
 {
@@ -39,37 +39,37 @@ uint8_t encodeDigit(uint8_t digit)
 }
 
 /**
- * This parses a number with an arbitrary number of digits up to 8.
+ * This decodes a number with an arbitrary number of digits up to 8.
  * The number is read as big endian.
  * 
  * @param buf    The buffer to use
- * @param length The number of digits to parse, max 8
+ * @param length The number of digits to decode, max 8
  * 
- * @return The parsed number, unsigned
+ * @return The decoded number, unsigned
  */
-uint32_t parseNumber(uint8_t *buf, uint8_t length) {
+uint32_t decodeNumber(uint8_t *buf, uint8_t length) {
     uint32_t ret = 0;
     uint8_t i;
     if (buf != NULL) {
         length = (length > 8) ? 8 : length;
         for (i = 0; i < length; i++) {
             ret <<= 4;
-            ret += parseDigit(buf[i]) & 0xF;
+            ret += decodeDigit(buf[i]) & 0xF;
         }
     }
     return ret;
 }
 /**
  * 
- * This parses byte data
+ * This decodes byte data
  * 
  * @param buf    The buffer to use
- * @param length The number of characters to parse
+ * @param length The number of characters to decode
  * @param data   The data buffer to put the byte data in
  * 
- * @return True if this was successfully parsed, false otherwise
+ * @return True if this was successfully decoded, false otherwise
  */
-bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data)
+bool decodeByteData(uint8_t *buf, uint8_t length, uint8_t *data)
 {
     if ((buf == NULL) || (data == NULL)) {
         // Can't have null pointers
@@ -78,21 +78,21 @@ bool parseByteData(uint8_t *buf, uint8_t length, uint8_t *data)
     uint8_t i;
     uint8_t bytes = length / 2;
     for (i = 0; i < bytes; i++) {
-        data[i] = (uint8_t)parseNumber(&(buf[i * 2]), 2);
+        data[i] = (uint8_t)decodeNumber(&(buf[i * 2]), 2);
     }
     return true;
 }
 /**
  * 
- * This parses a data packet
+ * This decodes a data packet
  * 
  * @param buf    The buffer to use
  * @param length The length of the buffer
  * @param frame  The frame struct to put the data into
  * 
- * @return True if this was successfully parsed, false otherwise
+ * @return True if this was successfully decoded, false otherwise
  */
-bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
+bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
 {
     initCANFrame(frame);
     if ((length < 5) || (buf == NULL) || (frame == NULL)) {
@@ -103,32 +103,32 @@ bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
     if ((buf[0] == 'T') && (length >= 10)) {
         frame->ext = true;
         frame->rtr = false;
-        frame->id = parseNumber(&buf[1], 8) & EXT_ID_MASK;
-        frame->length = (uint8_t)parseNumber(&buf[9], 1);
+        frame->id = decodeNumber(&buf[1], 8) & EXT_ID_MASK;
+        frame->length = (uint8_t)decodeNumber(&buf[9], 1);
         if (length >= (frame->length + frame->length + 10)) {
-            return parseByteData(&buf[10], frame->length * 2, frame->data);
+            return decodeByteData(&buf[10], frame->length * 2, frame->data);
         }
         return false;
     } else if ((buf[0] == 'R') && (length >= 10)) {
         frame->ext = true;
         frame->rtr = true;
-        frame->id = parseNumber(&buf[1], 8) & EXT_ID_MASK;
-        frame->length = (uint8_t)parseNumber(&buf[9], 1);
+        frame->id = decodeNumber(&buf[1], 8) & EXT_ID_MASK;
+        frame->length = (uint8_t)decodeNumber(&buf[9], 1);
         return true;
     } else if (buf[0] == 't') {
         frame->ext = false;
         frame->rtr = false;
-        frame->id = parseNumber(&buf[1], 3) & ID_MASK;
-        frame->length = (uint8_t)parseNumber(&buf[4], 1);
+        frame->id = decodeNumber(&buf[1], 3) & ID_MASK;
+        frame->length = (uint8_t)decodeNumber(&buf[4], 1);
         if (length >= (frame->length + frame->length + 5)) {
-            return parseByteData(&buf[5], frame->length * 2, frame->data);
+            return decodeByteData(&buf[5], frame->length * 2, frame->data);
         }
         return false;
     } else if ((buf[0] == 'r')  && (length >= 5)) {
         frame->ext = false;
         frame->rtr = true;
-        frame->id = parseNumber(&buf[1], 3) & ID_MASK;
-        frame->length = (uint8_t)parseNumber(&buf[4], 1);
+        frame->id = decodeNumber(&buf[1], 3) & ID_MASK;
+        frame->length = (uint8_t)decodeNumber(&buf[4], 1);
         return true;
     }
     return false;
@@ -136,15 +136,15 @@ bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
 
 /**
  * 
- * This parses a SL Command
+ * This decodes a SL Command
  * 
  * @param buf    The buffer to use
  * @param length The length of the buffer
  * @param cmd    The command struct to put the data into
  * 
- * @return True if this was successfully parsed, false otherwise
+ * @return True if this was successfully decoded, false otherwise
  */
-bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
+bool decodeSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
 {
     if ((length == 0) || (buf == NULL) || (cmd == NULL)) {
         // Packet Too Short
@@ -169,7 +169,7 @@ bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
         case 'S':    // Speed
             if ((length > 1) && (buf[1] != '\r')) {
                 cmd->type = Speed;
-                cmd->data = parseNumber(&buf[1], 1);
+                cmd->data = decodeNumber(&buf[1], 1);
             }
             break;
         default:
@@ -180,17 +180,17 @@ bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
 
 /**
  * 
- * This parses a SL Command
+ * This decodes a SL Command
  * 
  * @param buf    The buffer to use
  * @param length The length of the buffer
  * @param cmd    The command struct to use
  * 
- * @return True if this was successfully parsed, false otherwise
+ * @return True if this was successfully decoded, false otherwise
  */
-uint8_t replySLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
+uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length)
 {
-    if ((length == 0) || (buf == NULL) || (cmd == NULL)) {
+    if ((length == 0) || (buf == NULL)) {
         // Packet Too Short
         return false;
     }
@@ -200,7 +200,7 @@ uint8_t replySLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
 }
 /**
  * 
- * This parses a data packet
+ * This decodes a data packet
  * 
  * @param buf    The buffer to use
  * @param length The length of the buffer

@@ -1,8 +1,7 @@
-#ifndef SLCAN_H
-#define SLCAN_H
+#ifndef _SLCAN_H_
+#define _SLCAN_H_
 
 #include <inttypes.h>
-#include <stdio.h>
 #include <stdbool.h>
 #include <string.h>
 
@@ -30,9 +29,11 @@ typedef struct {
 } SLCommand;
 
 
-bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
-bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
+bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
+bool decodeSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
 uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
+uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length);
+
 /**
  * Checks if this is a complete packet or not.  A complete packet ends with '\r'
  * 
@@ -75,4 +76,4 @@ static inline void initCANFrame(CANFrame *frame)
 
 
 
-#endif // SLCAN_H
+#endif // _SLCAN_H_
