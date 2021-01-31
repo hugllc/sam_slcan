@@ -22,6 +22,21 @@ uint8_t parseDigit(uint8_t digit)
     // Don't know what this is
     return 0;
 }
+/**
+ * Parses a single text digit and returns the value
+ * 
+ * @param digit The character to parse
+ * 
+ * @return The value of the digit parsed
+ */
+uint8_t encodeDigit(uint8_t digit)
+{
+    digit &= 0xF;
+    if (digit < 10) {
+        return digit + '0';
+    }
+    return digit + 'A' - 10;
+}
 
 /**
  * This parses a number with an arbitrary number of digits up to 8.
@@ -161,4 +176,82 @@ bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
             break;
     }
     return cmd->type != Bad;
+}
+
+/**
+ * 
+ * This parses a SL Command
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * @param cmd    The command struct to use
+ * 
+ * @return True if this was successfully parsed, false otherwise
+ */
+uint8_t replySLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
+{
+    if ((length == 0) || (buf == NULL) || (cmd == NULL)) {
+        // Packet Too Short
+        return false;
+    }
+    uint8_t index = 0;
+    buf[index++] = '\r';
+    return index;
+}
+/**
+ * 
+ * This parses a data packet
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * @param frame  The frame struct to put the data into
+ * 
+ * @return The number of bytes encoded
+ */
+uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
+{
+    if ((length == 0) || (buf == NULL) || (frame == NULL)) {
+        // Packet Too Short
+        return 0;
+    }
+    uint8_t index = 0;
+    uint8_t i;
+    uint32_t id;
+    if (frame->rtr) {
+        if (frame->ext) {
+            buf[index++] = 'R';
+        } else {
+            buf[index++] = 'r';
+        }
+    } else {
+        if (frame->ext) {
+            buf[index++] = 'T';
+        } else {
+            buf[index++] = 't';
+        }
+    }
+    if (frame->ext) {
+        id = frame->id & EXT_ID_MASK;
+        for (i = 0; i < 8; i++) {
+            buf[index + 7 - i] = encodeDigit(id);
+            id >>= 4;
+        }
+        index += 8;
+    } else {
+        id = frame->id & ID_MASK;
+        for (i = 0; i < 3; i++) {
+            buf[index + 2 - i] = encodeDigit(id);
+            id >>= 4;
+        }
+        index += 3;
+    }
+    buf[index++] = encodeDigit(frame->length & 0xF);
+    if (!frame->rtr) {
+        for (i = 0; i < frame->length; i++) {
+            buf[index++] = encodeDigit(frame->data[i] >> 4);
+            buf[index++] = encodeDigit(frame->data[i]);
+        }
+    }
+    buf[index++] = '\r';
+    return index;
 }

@@ -32,7 +32,7 @@ typedef struct {
 
 bool parseCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 bool parseSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
-
+uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 /**
  * Checks if this is a complete packet or not.  A complete packet ends with '\r'
  * 
