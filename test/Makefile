@@ -15,3 +15,5 @@ coverage: suite
 	genhtml -o $(BASEDIR)/build/coverage --legend --title 'Code Coverage Report' $(BASEDIR)/build/report.info;
 	gcovr -f '${BASEDIR}/src/' -r $(BASEDIR) -x -o $(BASEDIR)/build/logs/cobertura.xml
 	cp -R */*-Results.xml $(BASEDIR)/build/logs
+
+.NOTPARALLEL:

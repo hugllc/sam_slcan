@@ -64,4 +64,4 @@ clean:
 
 distclean: clean
 
-.NOTPARALLEL: clean distclean
+.NOTPARALLEL:
