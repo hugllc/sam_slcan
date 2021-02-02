@@ -46,14 +46,14 @@ uint16_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
         }
     }
     if (frame->ext) {
-        id = frame->id & EXT_ID_MASK;
+        id = frame->id & SLCAN_EXT_ID_MASK;
         for (i = 0; i < 8; i++) {
             buf[index + 7 - i] = encodeDigit(id);
             id >>= 4;
         }
         index += 8;
     } else {
-        id = frame->id & ID_MASK;
+        id = frame->id & SLCAN_ID_MASK;
         for (i = 0; i < 3; i++) {
             buf[index + 2 - i] = encodeDigit(id);
             id >>= 4;

@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define EXT_ID_MASK 0x1FFFFFFF
-#define ID_MASK 0x7FF
+#define SLCAN_EXT_ID_MASK 0x1FFFFFFF
+#define SLCAN_ID_MASK 0x7FF
 
 typedef enum {
     Open,
