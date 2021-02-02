@@ -58,11 +58,11 @@ bool slcan_packet_rx(SLPacket *pkt)
     return false;
 }
 /**
- * Reads a packet out of the receive buffer
+ * Adds a byte to the rx buffer
  * 
  * @param pkt The packet to write it in.
  * 
- * @return True if a packet was received
+ * @return void
  */
 void slcan_add_rx_byte(uint8_t byte)
 {
@@ -70,11 +70,11 @@ void slcan_add_rx_byte(uint8_t byte)
 }
 
 /**
- * Reads a packet out of the receive buffer
+ * Sends a packet
  * 
  * @param pkt The packet to write it in.
  * 
- * @return True if a packet was received
+ * @return True if a packet was sent
  */
 bool slcan_send(SLPacket *pkt)
 {
@@ -91,4 +91,25 @@ bool slcan_send(SLPacket *pkt)
         return length > 0;
     }
     return false;
+}
+/**
+ * Sends a packet
+ * 
+ * @param id     The CAN ID to send
+ * @param length The length of the data
+ * @param data   The data to send out
+ * @param ext    True if this is an extended packet
+ * 
+ * @return True if a packet was sent
+ */
+bool slcan_send_frame(uint32_t id, uint8_t length, uint8_t *data, bool ext)
+{
+    SLPacket pkt;
+    pkt.type = Frame;
+    pkt.frame.id = id;
+    pkt.frame.length = length;
+    pkt.frame.rtr = false;
+    pkt.frame.ext = ext;
+    memcpy (pkt.frame.data, data, length);
+    return slcan_send(&pkt);
 }
