@@ -31,7 +31,7 @@ typedef struct {
 } SLPacket;
 
 bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *cmd);
-uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
+uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *frame);
 uint8_t encodeSLPacketReply(uint8_t *buf, uint8_t length);
 void slcan_init(void);
 

@@ -1339,11 +1339,11 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: returns 0 when length is 0) {
+    FCT_TEST_BGN(encodeSLPacket: returns 0 when length is 0) {
         uint8_t buffer[] = {};
-        CANFrame frame;
+        SLPacket frame;
         uint8_t ret, retexpect;
-        ret = encodeCANFrame(buffer, sizeof(buffer), &frame);
+        ret = encodeSLPacket(buffer, sizeof(buffer), &frame);
         retexpect = 0;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1353,10 +1353,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: returns 0 when buffer is NULL) {
-        CANFrame frame;
+    FCT_TEST_BGN(encodeSLPacket: returns 0 when buffer is NULL) {
+        SLPacket frame;
         uint8_t ret, retexpect;
-        ret = encodeCANFrame(NULL, 5, &frame);
+        ret = encodeSLPacket(NULL, 5, &frame);
         retexpect = 0;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1366,10 +1366,10 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: returns 0 when frame is NULL) {
+    FCT_TEST_BGN(encodeSLPacket: returns 0 when frame is NULL) {
         uint8_t buffer[] = {};
         uint8_t ret, retexpect;
-        ret = encodeCANFrame(buffer, sizeof(buffer), NULL);
+        ret = encodeSLPacket(buffer, sizeof(buffer), NULL);
         retexpect = 0;
         fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
     }
@@ -1379,22 +1379,27 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: normal packet decodes properly) {
+    FCT_TEST_BGN(encodeSLPacket: normal packet decodes properly) {
         uint8_t expect[] = { 't', '1', '2', '3', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
-        CANFrame have = {
-            .id = 0x123,
-            .length = 8,
-            .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
-            .ext = false,
-            .rtr = false,
-            .timestamp = 0
+        SLPacket have = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0x123,
+                .length = 8,
+                .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
+                .ext = false,
+                .rtr = false,
+                .timestamp = 0
+            }
         };
         uint8_t got[sizeof(expect) * 2];
         uint8_t i;
-        uint8_t ret, retexpect;
-        ret = encodeCANFrame(got, sizeof(got), &have);
+        uint16_t ret, retexpect;
+        ret = encodeSLPacket(got, sizeof(got), &have);
         retexpect = sizeof(expect);
-        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
         CheckBuffer(got, expect, i);
     }
     FCT_TEST_END()
@@ -1403,22 +1408,27 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: extended packet decodes properly) {
+    FCT_TEST_BGN(encodeSLPacket: extended packet decodes properly) {
         uint8_t expect[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
-        CANFrame have = {
-            .id = 0x12345678,
-            .length = 8,
-            .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
-            .ext = true,
-            .rtr = false,
-            .timestamp = 0
+        SLPacket have = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0x12345678,
+                .length = 8,
+                .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
+                .ext = true,
+                .rtr = false,
+                .timestamp = 0
+            }
         };
         uint8_t got[sizeof(expect) * 2];
         uint8_t i;
-        uint8_t ret, retexpect;
-        ret = encodeCANFrame(got, sizeof(got), &have);
+        uint16_t ret, retexpect;
+        ret = encodeSLPacket(got, sizeof(got), &have);
         retexpect = sizeof(expect);
-        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
         CheckBuffer(got, expect, i);
     }
     FCT_TEST_END()
@@ -1427,22 +1437,27 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: normal RTR packet decodes properly) {
+    FCT_TEST_BGN(encodeSLPacket: normal RTR packet decodes properly) {
         uint8_t expect[] = { 'r', '1', '2', '3', '8', '\r' };
-        CANFrame have = {
-            .id = 0x123,
-            .length = 8,
-            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
-            .ext = false,
-            .rtr = true,
-            .timestamp = 0
+        SLPacket have = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0x123,
+                .length = 8,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = false,
+                .rtr = true,
+                .timestamp = 0
+            }
         };
         uint8_t got[sizeof(expect) * 2];
         uint8_t i;
-        uint8_t ret, retexpect;
-        ret = encodeCANFrame(got, sizeof(got), &have);
+        uint16_t ret, retexpect;
+        ret = encodeSLPacket(got, sizeof(got), &have);
         retexpect = sizeof(expect);
-        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
         CheckBuffer(got, expect, i);
     }
     FCT_TEST_END()
@@ -1451,22 +1466,144 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(encodeCANFrame: extended RTR packet decodes properly) {
+    FCT_TEST_BGN(encodeSLPacket: extended RTR packet decodes properly) {
         uint8_t expect[] = { 'R', '1', '2', '3', '4', '5', '6', '7', '8', '8', '\r' };
-        CANFrame have = {
-            .id = 0x12345678,
-            .length = 8,
-            .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
-            .ext = true,
-            .rtr = true,
-            .timestamp = 0
+        SLPacket have = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0x12345678,
+                .length = 8,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = true,
+                .rtr = true,
+                .timestamp = 0
+            }
         };
         uint8_t got[sizeof(expect) * 2];
-        uint8_t ret, retexpect;
+        uint16_t ret, retexpect;
         uint8_t i;
-        ret = encodeCANFrame(got, sizeof(got), &have);
+        ret = encodeSLPacket(got, sizeof(got), &have);
         retexpect = sizeof(expect);
-        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
+        CheckBuffer(got, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(encodeSLPacket: encodes bad packets correctly) {
+        uint8_t expect[] = { 7 };
+        SLPacket have = {
+            .type = Bad,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0,
+                .length = 0,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = false,
+                .rtr = false,
+                .timestamp = 0
+            }
+        };
+        uint8_t got[sizeof(expect) * 2];
+        uint16_t ret, retexpect;
+        uint8_t i;
+        ret = encodeSLPacket(got, sizeof(got), &have);
+        retexpect = sizeof(expect);
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
+        CheckBuffer(got, expect, i);
+    }
+    FCT_TEST_END()
+
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(encodeSLPacket: encodes open packets correctly) {
+        uint8_t expect[] = { '\r' };
+        SLPacket have = {
+            .type = Open,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0,
+                .length = 0,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = false,
+                .rtr = false,
+                .timestamp = 0
+            }
+        };
+        uint8_t got[sizeof(expect) * 2];
+        uint16_t ret, retexpect;
+        uint8_t i;
+        ret = encodeSLPacket(got, sizeof(got), &have);
+        retexpect = sizeof(expect);
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
+        CheckBuffer(got, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(encodeSLPacket: encodes close packets correctly) {
+        uint8_t expect[] = { '\r' };
+        SLPacket have = {
+            .type = Close,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0,
+                .length = 0,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = false,
+                .rtr = false,
+                .timestamp = 0
+            }
+        };
+        uint8_t got[sizeof(expect) * 2];
+        uint16_t ret, retexpect;
+        uint8_t i;
+        ret = encodeSLPacket(got, sizeof(got), &have);
+        retexpect = sizeof(expect);
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
+        CheckBuffer(got, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(encodeSLPacket: encodes listen packets correctly) {
+        uint8_t expect[] = { '\r' };
+        SLPacket have = {
+            .type = Listen,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0,
+                .length = 0,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = false,
+                .rtr = false,
+                .timestamp = 0
+            }
+        };
+        uint8_t got[sizeof(expect) * 2];
+        uint16_t ret, retexpect;
+        uint8_t i;
+        ret = encodeSLPacket(got, sizeof(got), &have);
+        retexpect = sizeof(expect);
+        fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
         CheckBuffer(got, expect, i);
     }
     FCT_TEST_END()

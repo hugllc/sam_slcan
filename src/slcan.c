@@ -206,26 +206,6 @@ bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
 
 /**
  * 
- * This decodes a SL Command
- * 
- * @param buf    The buffer to use
- * @param length The length of the buffer
- * @param cmd    The command struct to use
- * 
- * @return True if this was successfully decoded, false otherwise
- */
-uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length)
-{
-    if ((length == 0) || (buf == NULL)) {
-        // Packet Too Short
-        return false;
-    }
-    uint8_t index = 0;
-    buf[index++] = '\r';
-    return index;
-}
-/**
- * 
  * This decodes a data packet
  * 
  * @param buf    The buffer to use
@@ -234,12 +214,8 @@ uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length)
  * 
  * @return The number of bytes encoded
  */
-uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
+uint16_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
 {
-    if ((length == 0) || (buf == NULL) || (frame == NULL)) {
-        // Packet Too Short
-        return 0;
-    }
     uint8_t index = 0;
     uint8_t i;
     uint32_t id;
@@ -279,5 +255,40 @@ uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
         }
     }
     buf[index++] = '\r';
+    return index;
+}
+
+/**
+ * 
+ * This decodes a SL Command
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * @param pkt    The packet to encode
+ * 
+ * @return The number of bytes that were written to buf
+ */
+uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
+{
+    if ((length == 0) || (buf == NULL) || (pkt == NULL)) {
+        // Packet Too Short
+        return false;
+    }
+    uint16_t index = 0;
+    switch (pkt->type) {
+        case Bad:
+            buf[index++] = 7;
+            break;
+        case Frame:
+            index = encodeCANFrame(buf, length, &(pkt->frame));
+            break;
+        case Open:
+        case Close:
+        case Listen:
+        case Speed:
+        default:
+            buf[index++] = '\r';
+            break;
+    }
     return index;
 }
