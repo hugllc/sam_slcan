@@ -19,6 +19,7 @@ void slcan_init(void)
     slcanbuf_init(&slcan_txbuf);
     slcanbuf_init(&slcan_rxbuf);
 }
+
 /**
  * Parses a single text digit and returns the value
  * 
@@ -160,38 +161,47 @@ bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
  * 
  * @return True if this was successfully decoded, false otherwise
  */
-bool decodeSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd)
+bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
 {
-    if ((length == 0) || (buf == NULL) || (cmd == NULL)) {
+    if ((length == 0) || (buf == NULL) || (pkt == NULL)) {
         // Packet Too Short
         return false;
     }
-    cmd->cmd = buf[0];
-    cmd->type = Bad;
-    cmd->data = 0;
+    memset(pkt, 0, sizeof(SLPacket));
+    pkt->cmd = buf[0];
+    pkt->type = Bad;
+    pkt->data = 0;
     switch (buf[0]) {
         case 'O':    // Open
-            cmd->type = Open;
-            cmd->data = 0;
+            pkt->type = Open;
+            pkt->data = 0;
             break;
         case 'C':    // Close
-            cmd->type = Close;
-            cmd->data = 0;
+            pkt->type = Close;
+            pkt->data = 0;
             break;
         case 'L':    // Listen
-            cmd->type = Listen;
-            cmd->data = 0;
+            pkt->type = Listen;
+            pkt->data = 0;
             break;
         case 'S':    // Speed
             if ((length > 1) && (buf[1] != '\r')) {
-                cmd->type = Speed;
-                cmd->data = decodeNumber(&buf[1], 1);
+                pkt->type = Speed;
+                pkt->data = decodeNumber(&buf[1], 1);
+            }
+            break;
+        case 'T':
+        case 't':
+        case 'R':
+        case 'r':
+            if (decodeCANFrame(buf, length, &pkt->frame)) {
+                pkt->type = Frame;
             }
             break;
         default:
             break;
     }
-    return cmd->type != Bad;
+    return pkt->type != Bad;
 }
 
 /**

@@ -10,8 +10,9 @@ typedef enum {
     Close,
     Listen,
     Speed,
+    Frame,
     Bad
-} SLCommandType;
+} SLPacketType;
 
 typedef struct {
     uint32_t id;
@@ -23,16 +24,15 @@ typedef struct {
 } CANFrame;
 
 typedef struct {
-    SLCommandType type;
+    SLPacketType type;
     uint32_t data;
     char cmd;
-} SLCommand;
+    CANFrame frame;
+} SLPacket;
 
-
-bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
-bool decodeSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
+bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *cmd);
 uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
-uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length);
+uint8_t encodeSLPacketReply(uint8_t *buf, uint8_t length);
 void slcan_init(void);
 
 /**
@@ -74,7 +74,6 @@ static inline void initCANFrame(CANFrame *frame)
         memset(frame, 0, sizeof(CANFrame));
     }
 }
-
 
 
 #endif // _SLCAN_H_
