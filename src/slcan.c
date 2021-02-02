@@ -1,8 +1,24 @@
 
 #include "slcan.h"
+#include "slcanbuf.h"
+
+SLCanBuf slcan_txbuf;
+SLCanBuf slcan_rxbuf;
 
 #define EXT_ID_MASK 0x1FFFFFFF
 #define ID_MASK 0x7FF
+
+
+/**
+ * Initializes the slcan framework
+ * 
+ * @return void
+ */
+void slcan_init(void)
+{
+    slcanbuf_init(&slcan_txbuf);
+    slcanbuf_init(&slcan_rxbuf);
+}
 /**
  * Parses a single text digit and returns the value
  * 

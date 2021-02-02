@@ -33,6 +33,7 @@ bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 bool decodeSLCommand(uint8_t *buf, uint8_t length, SLCommand *cmd);
 uint8_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame);
 uint8_t encodeSLCommandReply(uint8_t *buf, uint8_t length);
+void slcan_init(void);
 
 /**
  * Checks if this is a complete packet or not.  A complete packet ends with '\r'
