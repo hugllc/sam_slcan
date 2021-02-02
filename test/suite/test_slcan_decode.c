@@ -11,7 +11,6 @@
  *
  */
 #include <inttypes.h>
-#include <cmath>
 #include <stdio.h>
 #include "main.h"
 #include "fct.h"

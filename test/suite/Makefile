@@ -48,19 +48,16 @@ junit: run_test
 	-./run_test -l junit > $(TEST_TARGET)$(TEST_NAME)-Results.xml
 
 run_test: $(TEST_OBJECTS) $(HEADER_FILES)
-	$(GPP) $(LDFLAGS) $(CFLAGS_TARGET) -o $@ $(TEST_OBJECTS)
+	$(GCC) $(LDFLAGS) $(CFLAGS_TARGET) -o $@ $(TEST_OBJECTS)
 
 $(TARGET).o : $(TARGET).cpp $(TARGET).h
-	$(GPP) $(CFLAGS_TARGET) -c $< -o $@
-
-%.o : %.cpp %.h
-	$(GPP) $(CFLAGS_TEST) -c $< -o $@
-
-%.o : %.cpp
-	$(GPP) $(CFLAGS_TEST) -c $< -o $@
+	$(GCC) $(CFLAGS_TARGET) -c $< -o $@
 
 %.o : %.c %.h
-	$(GPP) $(CFLAGS_TEST) -c $< -o $@
+	$(GCC) $(CFLAGS_TEST) -c $< -o $@
+
+%.o : %.c
+	$(GCC) $(CFLAGS_TEST) -c $< -o $@
 
 clean:
 	rm -f *~ *.o run_test *.gcda *.gcno *Results.xml *.orig
