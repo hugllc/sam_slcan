@@ -1,4 +1,4 @@
-TEST_OBJECTS:=main.o test_slcan.o slcan.o
+TEST_OBJECTS:=main.o test_slcan.o test_slcanbuf.o slcan.o
 HEADER_FILES:=main.h
 
 
