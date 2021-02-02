@@ -6,6 +6,8 @@ uint32_t reboot;
 FCT_BGN()
 {
     FCTMF_SUITE_CALL(test_slcanbuf);
+    FCTMF_SUITE_CALL(test_slcan_decode);
+    FCTMF_SUITE_CALL(test_slcan_encode);
     FCTMF_SUITE_CALL(test_slcan);
 }
 FCT_END();
