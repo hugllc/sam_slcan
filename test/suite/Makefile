@@ -63,3 +63,5 @@ clean:
 	rm -f *~ *.o run_test *.gcda *.gcno *Results.xml *.orig
 
 distclean: clean
+
+.NOTPARALLEL: clean distclean

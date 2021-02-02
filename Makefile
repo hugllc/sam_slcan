@@ -13,3 +13,5 @@ distclean:
 
 
 .PHONY: test
+.NOTPARALLEL: clean distclean
+
