@@ -1,4 +1,4 @@
-TEST_OBJECTS:=main.o test_slcan.o test_slcanbuf.o test_slcan_encode.o test_slcan_decode.o slcan.o slcan_decode.o slcan_encode.o
+TEST_OBJECTS:=main.o test_slcan.o test_slcanbuf.o test_slcan_encode.o test_slcan_decode.o test_extra.o slcan.o slcan_decode.o slcan_encode.o
 HEADER_FILES:=main.h
 
 
@@ -43,6 +43,7 @@ test: run_test
 	./run_test -l standard
 
 junit: run_test
+	./run_test -l standard
 	@echo "Test output is in $(TEST_TARGET)$(TEST_NAME)-Results.xml"
 	rm -f *-Results.xml
 	-./run_test -l junit > $(TEST_TARGET)$(TEST_NAME)-Results.xml
