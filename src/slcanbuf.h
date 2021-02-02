@@ -67,11 +67,22 @@ static inline void slcanbuf_init(SLCanBuf *buf)
  * 
  * @param buf The buffer to use
  * 
- * @return true if the buffer is emtpy
+ * @return true if the buffer is empty
  */
 static inline bool slcanbuf_isEmpty(SLCanBuf *buf)
 {
     return buf->head == buf->tail;
+}
+/**
+ * Checks to see if the buffer is empty
+ * 
+ * @param buf The buffer to use
+ * 
+ * @return true if the buffer contains at least one packet
+ */
+static inline bool slcanbuf_hasPacket(SLCanBuf *buf)
+{
+    return buf->packets > 0;
 }
 /**
  * Adds the given byte to the buffer.  It will remove the
@@ -130,6 +141,7 @@ static inline uint16_t slcanbuf_getPacket(SLCanBuf *cbuf, uint8_t *buffer, uint1
             i++;
             break;
         }
+        cbuf->packets--;
     }
     return i;
 }

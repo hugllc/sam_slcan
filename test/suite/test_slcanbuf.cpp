@@ -40,6 +40,20 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
      *
      * @return void
      */
+    FCT_TEST_BGN(slcanbuf: initialized buffer is empty) {
+        SLCanBuf cbuf;
+        bool ret, expect = true;
+        slcanbuf_init(&cbuf);
+        ret = slcanbuf_isEmpty(&cbuf);
+        fct_xchk(ret == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
     FCT_TEST_BGN(slcanbuf: takes bytes in and gives them out) {
         uint8_t buffer[] = { 'T', '1', '2', '3', '4', '5', '6', '\r' };
         SLCanBuf cbuf;
@@ -112,6 +126,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
         SLCanBuf cbuf;
         uint16_t ret;
         uint16_t i;
+        bool bret, bexpect;
         slcanbuf_init(&cbuf);
         for (i = 0; i < sizeof(buffer); i++) {
             slcanbuf_push(&cbuf, buffer[i]);
@@ -119,11 +134,18 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
         for (i = 0; i < sizeof(extra); i++) {
             slcanbuf_push(&cbuf, extra[i]);
         }
+        bret = slcanbuf_hasPacket(&cbuf);
+        bexpect = true;
+        fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
+
         ret = slcanbuf_getPacket(&cbuf, got, sizeof(got));
         fct_xchk(ret == sizeof(buffer), "Expected %u bytes returned got %u", sizeof(buffer), ret);
         for (i = 0; i < ret; i++) {
             fct_xchk(got[i] == buffer[i], "Iteration %d:  Expected %c got %c", i, buffer[i], got[i]);
         }
+        bret = slcanbuf_hasPacket(&cbuf);
+        bexpect = true;
+        fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
 
@@ -138,10 +160,14 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
         SLCanBuf cbuf;
         uint16_t ret, expect = 0;
         uint16_t i;
+        bool bret, bexpect;
         slcanbuf_init(&cbuf);
         for (i = 0; i < sizeof(buffer); i++) {
             slcanbuf_push(&cbuf, buffer[i]);
         }
+        bret = slcanbuf_hasPacket(&cbuf);
+        bexpect = false;
+        fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
         ret = slcanbuf_getPacket(&cbuf, got, sizeof(got));
         fct_xchk(ret == expect, "Expected %u bytes returned got %u", expect, ret);
     }
