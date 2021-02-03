@@ -27,7 +27,7 @@ uint8_t encodeDigit(uint8_t digit)
  * 
  * @return The number of bytes encoded
  */
-uint16_t encodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
+uint16_t encodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame)
 {
     uint8_t index = 0;
     uint8_t i;
@@ -93,7 +93,7 @@ uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
             buf[index++] = 7;
             break;
         case Frame:
-            index = encodeCANFrame(buf, length, &(pkt->frame));
+            index = encodeSLCANFrame(buf, length, &(pkt->frame));
             break;
         case Open:
         case Close:

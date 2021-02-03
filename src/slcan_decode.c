@@ -76,7 +76,7 @@ bool decodeByteData(uint8_t *buf, uint8_t length, uint8_t *data)
  * 
  * @return True if this was successfully decoded, false otherwise
  */
-bool decodeCANFrame(uint8_t *buf, uint8_t length, CANFrame *frame)
+bool decodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame)
 {
     initCANFrame(frame);
     if ((length < 5) || (buf == NULL) || (frame == NULL)) {
@@ -161,7 +161,7 @@ bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
         case 't':
         case 'R':
         case 'r':
-            if (decodeCANFrame(buf, length, &pkt->frame)) {
+            if (decodeSLCANFrame(buf, length, &pkt->frame)) {
                 pkt->type = Frame;
             }
             break;

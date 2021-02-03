@@ -24,13 +24,13 @@ typedef struct {
     bool ext;
     bool rtr;
     uint16_t timestamp;
-} CANFrame;
+} SLCANFrame;
 
 typedef struct {
     SLPacketType type;
     uint32_t data;
     char cmd;
-    CANFrame frame;
+    SLCANFrame frame;
 } SLPacket;
 
 
@@ -67,10 +67,10 @@ static inline bool isCANFrame(uint8_t *buf, uint8_t length)
  * 
  * @return True if this is a full packet false otherwise
  */
-static inline void initCANFrame(CANFrame *frame)
+static inline void initCANFrame(SLCANFrame *frame)
 {
     if (frame != NULL) {
-        memset(frame, 0, sizeof(CANFrame));
+        memset(frame, 0, sizeof(SLCANFrame));
     }
 }
 

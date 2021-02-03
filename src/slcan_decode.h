@@ -7,6 +7,7 @@
 
 #include "slcan_defines.h"
 
-bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *cmd);
+bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt);
+bool decodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame);
 
 #endif // _SLCAN__DECODE_H_
