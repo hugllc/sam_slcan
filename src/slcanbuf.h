@@ -16,12 +16,12 @@ typedef struct {
     uint8_t data[SLCAN_BUFFER_SIZE];
 } SLCanBuf;
 
-void slcanbuf_incTail(SLCanBuf *buf);
-void slcanbuf_incHead(SLCanBuf *buf);
-void slcanbuf_init(SLCanBuf *buf);
-bool slcanbuf_isEmpty(SLCanBuf *buf);
-bool slcanbuf_hasPacket(SLCanBuf *buf);
-void slcanbuf_push(SLCanBuf *buf, uint8_t byte);
-uint8_t slcanbuf_pop(SLCanBuf *buf);
-uint16_t slcanbuf_getPacket(SLCanBuf *cbuf, uint8_t *buffer, uint16_t length);
+void slcanbuf_incTail(volatile SLCanBuf *buf);
+void slcanbuf_incHead(volatile SLCanBuf *buf);
+void slcanbuf_init(volatile SLCanBuf *buf);
+bool slcanbuf_isEmpty(volatile SLCanBuf *buf);
+bool slcanbuf_hasPacket(volatile SLCanBuf *buf);
+void slcanbuf_push(volatile SLCanBuf *buf, uint8_t byte);
+uint8_t slcanbuf_pop(volatile SLCanBuf *buf);
+uint16_t slcanbuf_getPacket(volatile SLCanBuf *cbuf, uint8_t *buffer, uint16_t length);
 #endif // _SLCANBUF_H_

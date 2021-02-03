@@ -4,8 +4,8 @@
 #include "slcan_encode.h"
 #include "slcanbuf.h"
 
-SLCanBuf slcan_txbuf;
-SLCanBuf slcan_rxbuf;
+volatile SLCanBuf slcan_txbuf;
+volatile SLCanBuf slcan_rxbuf;
 
 /**
  * Initializes the slcan framework

@@ -11,7 +11,7 @@
  * 
  * @return void
  */
-void slcanbuf_incTail(SLCanBuf *buf)
+void slcanbuf_incTail(volatile SLCanBuf *buf)
 {
     buf->tail++;
     if (buf->tail >= SLCAN_BUFFER_SIZE) {
@@ -25,7 +25,7 @@ void slcanbuf_incTail(SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_incHead(SLCanBuf *buf)
+void slcanbuf_incHead(volatile SLCanBuf *buf)
 {
     buf->head++;
     if (buf->head >= SLCAN_BUFFER_SIZE) {
@@ -44,9 +44,9 @@ void slcanbuf_incHead(SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_init(SLCanBuf *buf)
+void slcanbuf_init(volatile SLCanBuf *buf)
 {
-    memset(buf, 0, sizeof(SLCanBuf));
+    memset((uint8_t *)buf, 0, sizeof(SLCanBuf));
 }
 
 /**
@@ -56,7 +56,7 @@ void slcanbuf_init(SLCanBuf *buf)
  * 
  * @return true if the buffer is empty
  */
-bool slcanbuf_isEmpty(SLCanBuf *buf)
+bool slcanbuf_isEmpty(volatile SLCanBuf *buf)
 {
     return buf->head == buf->tail;
 }
@@ -67,7 +67,7 @@ bool slcanbuf_isEmpty(SLCanBuf *buf)
  * 
  * @return true if the buffer contains at least one packet
  */
-bool slcanbuf_hasPacket(SLCanBuf *buf)
+bool slcanbuf_hasPacket(volatile SLCanBuf *buf)
 {
     return buf->packets > 0;
 }
@@ -80,7 +80,7 @@ bool slcanbuf_hasPacket(SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_push(SLCanBuf *buf, uint8_t byte)
+void slcanbuf_push(volatile SLCanBuf *buf, uint8_t byte)
 {
     buf->data[buf->head] = byte;
     if (byte == '\r') {
@@ -96,7 +96,7 @@ void slcanbuf_push(SLCanBuf *buf, uint8_t byte)
  * 
  * @return The byte popped off the buffer.  Returns 0 if the buffer is empty.
  */
-uint8_t slcanbuf_pop(SLCanBuf *buf)
+uint8_t slcanbuf_pop(volatile SLCanBuf *buf)
 {
     if (slcanbuf_isEmpty(buf)) {
         return 0;
@@ -114,7 +114,7 @@ uint8_t slcanbuf_pop(SLCanBuf *buf)
  * 
  * @return The number of bytes put into the buffer
  */
-uint16_t slcanbuf_getPacket(SLCanBuf *cbuf, uint8_t *buffer, uint16_t length)
+uint16_t slcanbuf_getPacket(volatile SLCanBuf *cbuf, uint8_t *buffer, uint16_t length)
 {
     uint16_t i;
     uint8_t byte;
