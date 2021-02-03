@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include "slcanbuf.h"
-
+#include "slcan_defines.h"
 /**
  * Increments the tail
  * 
@@ -121,14 +121,15 @@ uint16_t slcanbuf_getPacket(volatile SLCanBuf *cbuf, uint8_t *buffer, uint16_t l
     if (cbuf->packets == 0) {
         return 0;
     }
-    for (i = 0; i < length; i++) {
+    i = 0;
+    while (!slcanbuf_isEmpty(cbuf) && (i < length)) {
         byte = slcanbuf_pop(cbuf);
         buffer[i] = byte;
+        i++;
         if (byte == '\r') {
-            i++;
+            cbuf->packets--;
             break;
         }
-        cbuf->packets--;
     }
     return i;
 }

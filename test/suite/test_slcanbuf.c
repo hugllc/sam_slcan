@@ -172,5 +172,25 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
     }
     FCT_TEST_END()
 
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(slcanbuf: returns 0 length if buffer is empty) {
+        uint8_t got[256];
+        SLCanBuf cbuf;
+        uint16_t ret, expect = 0;
+        uint16_t i;
+        bool bret, bexpect;
+        slcanbuf_init(&cbuf);
+        bret = slcanbuf_hasPacket(&cbuf);
+        bexpect = false;
+        fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
+        ret = slcanbuf_getPacket(&cbuf, got, sizeof(got));
+        fct_xchk(ret == expect, "Expected %u bytes returned got %u", expect, ret);
+    }
+    FCT_TEST_END()
+
 }
 FCTMF_FIXTURE_SUITE_END();
