@@ -143,7 +143,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
             fct_xchk(got[i] == buffer[i], "Iteration %d:  Expected %c got %c", i, buffer[i], got[i]);
         }
         bret = slcanbuf_hasPacket(&cbuf);
-        bexpect = true;
+        bexpect = false;
         fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
     }
     FCT_TEST_END()
@@ -181,7 +181,6 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcanbuf)
         uint8_t got[256];
         SLCanBuf cbuf;
         uint16_t ret, expect = 0;
-        uint16_t i;
         bool bret, bexpect;
         slcanbuf_init(&cbuf);
         bret = slcanbuf_hasPacket(&cbuf);
