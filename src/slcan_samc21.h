@@ -23,7 +23,7 @@ typedef enum {
     NVIC_DisableIRQ(irq); \
     NVIC_ClearPendingIRQ(irq); \
     NVIC_SetPriority(irq, priority);  \
-    NVIC_EnableIRQ(irq); \
+    NVIC_EnableIRQ(irq)
 
 
 static inline void slcan_usart_init(Sercom *usart, uint32_t baud, slcan_uart_pads pads, bool pin_mux_alt, uint8_t group, uint8_t txpin, uint8_t rxpin)
