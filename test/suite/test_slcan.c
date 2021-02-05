@@ -85,7 +85,7 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
-    FCT_TEST_BGN(slcan_send: can read out a packet that was sent) {
+    FCT_TEST_BGN(slcan_read_tx_buf: can read out a packet that was sent) {
         uint8_t got[BUF_SIZE];
         uint8_t expect[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
         SLPacket have = {
@@ -108,6 +108,38 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
         ret = slcan_read_tx_buf(got, sizeof(got));
         fct_xchk(ret == retexpect, "Expected %u got %u", retexpect, ret);
         CheckBuffer(got, expect, i);
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(slcan_read_tx_byte: can read out a packet that was sent) {
+        uint8_t got;
+        uint8_t expect[] = { 'T', '1', '2', '3', '4', '5', '6', '7', '8', '8', '0', '0', '1', '1', '2', '2', '3', '3', '4', '4', '5', '5', '6', '6', '7', '7', '\r' };
+        SLPacket have = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'S',
+            .frame = {
+                .id = 0x12345678,
+                .length = 8,
+                .data = { 0x0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77 },
+                .ext = true,
+                .rtr = false,
+                .timestamp = 0
+            }
+        };
+        bool bret, bexpect = true;
+        uint16_t i;
+        bret = slcan_send(&have);
+        fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
+        for (i = 0; i < sizeof(expect); i++) {
+            bret = slcan_read_tx_byte(&got);
+            fct_xchk(bret == bexpect, "Expected %s got %s", bexpect ? "TRUE" : "FALSE", bret ? "TRUE" : "FALSE");
+            fct_xchk(got == expect[i], "Iteration %u: Expected %u got %u", i, expect[i], got);
+        }
     }
     FCT_TEST_END()
     /**

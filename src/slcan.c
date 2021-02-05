@@ -104,6 +104,22 @@ void slcan_add_rx_byte(uint8_t byte)
 }
 
 /**
+ * Adds a byte to the rx buffer
+ * 
+ * @param pkt The packet to write it in.
+ * 
+ * @return void
+ */
+bool slcan_read_tx_byte(uint8_t *byte)
+{
+    if ((byte != NULL) && !circbuf_isEmpty(&slcan_txbuf)) {
+        *byte = circbuf_pop(&slcan_txbuf);
+        return true;
+    }
+    return false;
+}
+
+/**
  * Sends a packet
  * 
  * @param pkt The packet to write it in.
