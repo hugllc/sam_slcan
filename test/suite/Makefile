@@ -1,5 +1,5 @@
-TEST_OBJECTS := main.o test_slcan.o test_slcanbuf.o test_slcan_encode.o test_slcan_decode.o test_extra.o
-TEST_OBJECTS += slcan.o slcan_decode.o slcan_encode.o slcanbuf.o
+TEST_OBJECTS := main.o test_slcan.o test_circbuf.o test_slcan_encode.o test_slcan_decode.o test_extra.o
+TEST_OBJECTS += slcan.o slcan_decode.o slcan_encode.o circbuf.o
 HEADER_FILES:=main.h
 
 
