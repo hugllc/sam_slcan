@@ -104,11 +104,11 @@ void slcan_add_rx_byte(uint8_t byte)
 }
 
 /**
- * Adds a byte to the rx buffer
+ * Gets a byte from the tx buffer
  * 
- * @param pkt The packet to write it in.
+ * @param byte Where to store the byte
  * 
- * @return void
+ * @return true if there is a byte, false otherwise
  */
 bool slcan_read_tx_byte(uint8_t *byte)
 {
@@ -117,6 +117,16 @@ bool slcan_read_tx_byte(uint8_t *byte)
         return true;
     }
     return false;
+}
+
+/**
+ * Checks to see if there is anything in the tx buffer
+ * 
+ * @return true if there is a byte, false otherwise
+ */
+bool slcan_tx_has_byte(void)
+{
+    return !circbuf_isEmpty(&slcan_txbuf);
 }
 
 /**
@@ -160,6 +170,8 @@ bool slcan_send_frame(uint32_t id, uint8_t length, uint8_t *data, bool ext)
     pkt.frame.length = length;
     pkt.frame.rtr = false;
     pkt.frame.ext = ext;
-    memcpy (pkt.frame.data, data, length);
+    if (data != NULL) {
+        memcpy (pkt.frame.data, data, length);
+    }
     return slcan_send(&pkt);
 }

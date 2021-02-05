@@ -165,6 +165,42 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan)
      *
      * @return void
      */
+    FCT_TEST_BGN(slcan_tx_has_byte: returns false with an empty buffer) {
+        bool got, expect = false;
+        got = slcan_tx_has_byte();
+        fct_xchk(got == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", got ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(slcan_tx_has_byte: returns true with an non empty buffer) {
+        uint8_t buf[10];
+        bool got, expect = true;
+        slcan_send_frame(0x12345678, 0, buf, true);
+        got = slcan_tx_has_byte();
+        fct_xchk(got == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", got ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(slcan_send_frame: takes NULL data) {
+        bool expect = true;
+        // This will segfault if it fails
+        bool got = slcan_send_frame(0x12345678, 8, NULL, true);
+        fct_xchk(got == expect, "Expected %s got %s", expect ? "TRUE" : "FALSE", got ? "TRUE" : "FALSE");
+    }
+    FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
     FCT_TEST_BGN(slcan_send: takes a null) {
         bool bret, bexpect = false;
         bret = slcan_send(NULL);
