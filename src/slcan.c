@@ -2,12 +2,12 @@
 #include "slcan_defines.h"
 #include "slcan_decode.h"
 #include "slcan_encode.h"
-#include "slcanbuf.h"
+#include "circbuf.h"
 #include "slcan.h"
 #include <stdio.h>
 
-volatile SLCanBuf slcan_txbuf;
-volatile SLCanBuf slcan_rxbuf;
+volatile CircBuf slcan_txbuf;
+volatile CircBuf slcan_rxbuf;
 
 /**
  * Initializes the slcan framework
@@ -16,8 +16,8 @@ volatile SLCanBuf slcan_rxbuf;
  */
 void slcan_init(void)
 {
-    slcanbuf_init(&slcan_txbuf);
-    slcanbuf_init(&slcan_rxbuf);
+    circbuf_init(&slcan_txbuf);
+    circbuf_init(&slcan_rxbuf);
 }
 
 /**
@@ -32,8 +32,8 @@ uint16_t slcan_read_tx_buf(uint8_t *buf, uint16_t length)
 {
     uint16_t index = 0;
     if (buf != NULL) {
-        while (!slcanbuf_isEmpty(&slcan_txbuf) && (index < length)) {
-            buf[index] = slcanbuf_pop(&slcan_txbuf);
+        while (!circbuf_isEmpty(&slcan_txbuf) && (index < length)) {
+            buf[index] = circbuf_pop(&slcan_txbuf);
             index++;
         }
     }
@@ -53,7 +53,7 @@ bool slcan_packet_rx(SLPacket *pkt)
     uint8_t buf[64];
     bool ret = false;
     if (pkt != NULL) {
-        length = slcanbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
+        length = circbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
         if (length > 0) {
             ret = decodeSLPacket(buf, length, pkt);
             if (ret && (pkt->type != Frame)) {
@@ -77,7 +77,7 @@ bool slcan_frame_rx(SLCANFrame *frame)
     SLPacket pkt;
     bool ret = false;
     if (frame != NULL) {
-        length = slcanbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
+        length = circbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
         if (length > 0) {
             ret = decodeSLCANFrame(buf, length, frame);
             if (ret == false) {
@@ -100,7 +100,33 @@ bool slcan_frame_rx(SLCANFrame *frame)
  */
 void slcan_add_rx_byte(uint8_t byte)
 {
-    slcanbuf_push(&slcan_rxbuf, byte);
+    circbuf_push(&slcan_rxbuf, byte);
+}
+
+/**
+ * Gets a byte from the tx buffer
+ * 
+ * @param byte Where to store the byte
+ * 
+ * @return true if there is a byte, false otherwise
+ */
+bool slcan_read_tx_byte(uint8_t *byte)
+{
+    if ((byte != NULL) && !circbuf_isEmpty(&slcan_txbuf)) {
+        *byte = circbuf_pop(&slcan_txbuf);
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Checks to see if there is anything in the tx buffer
+ * 
+ * @return true if there is a byte, false otherwise
+ */
+bool slcan_tx_has_byte(void)
+{
+    return !circbuf_isEmpty(&slcan_txbuf);
 }
 
 /**
@@ -119,7 +145,7 @@ bool slcan_send(SLPacket *pkt)
         length = encodeSLPacket(buf, sizeof(buf), pkt);
         index = 0;
         while (length > index) {
-            slcanbuf_push(&slcan_txbuf, buf[index]);
+            circbuf_push(&slcan_txbuf, buf[index]);
             index++;
         }
         return length > 0;
@@ -144,6 +170,8 @@ bool slcan_send_frame(uint32_t id, uint8_t length, uint8_t *data, bool ext)
     pkt.frame.length = length;
     pkt.frame.rtr = false;
     pkt.frame.ext = ext;
-    memcpy (pkt.frame.data, data, length);
+    if (data != NULL) {
+        memcpy (pkt.frame.data, data, length);
+    }
     return slcan_send(&pkt);
 }

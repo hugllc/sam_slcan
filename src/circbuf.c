@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <stdbool.h>
 #include <string.h>
-#include "slcanbuf.h"
+#include "circbuf.h"
 #include "slcan_defines.h"
 /**
  * Increments the tail
@@ -11,10 +11,10 @@
  * 
  * @return void
  */
-void slcanbuf_incTail(volatile SLCanBuf *buf)
+void circbuf_incTail(volatile CircBuf *buf)
 {
     buf->tail++;
-    if (buf->tail >= SLCAN_BUFFER_SIZE) {
+    if (buf->tail >= CIRC_BUFFER_SIZE) {
         buf->tail = 0;
     };
 }
@@ -25,15 +25,15 @@ void slcanbuf_incTail(volatile SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_incHead(volatile SLCanBuf *buf)
+void circbuf_incHead(volatile CircBuf *buf)
 {
     buf->head++;
-    if (buf->head >= SLCAN_BUFFER_SIZE) {
+    if (buf->head >= CIRC_BUFFER_SIZE) {
         buf->head = 0;
     };
     // Increment the tail if we just overfilled the buffer.  This erases the oldest byte in the buffer
     if (buf->tail == buf->head) {
-        slcanbuf_incTail(buf);
+        circbuf_incTail(buf);
     }
 }
 
@@ -44,9 +44,9 @@ void slcanbuf_incHead(volatile SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_init(volatile SLCanBuf *buf)
+void circbuf_init(volatile CircBuf *buf)
 {
-    memset((uint8_t *)buf, 0, sizeof(SLCanBuf));
+    memset((uint8_t *)buf, 0, sizeof(CircBuf));
 }
 
 /**
@@ -56,7 +56,7 @@ void slcanbuf_init(volatile SLCanBuf *buf)
  * 
  * @return true if the buffer is empty
  */
-bool slcanbuf_isEmpty(volatile SLCanBuf *buf)
+bool circbuf_isEmpty(volatile CircBuf *buf)
 {
     return buf->head == buf->tail;
 }
@@ -67,7 +67,7 @@ bool slcanbuf_isEmpty(volatile SLCanBuf *buf)
  * 
  * @return true if the buffer contains at least one packet
  */
-bool slcanbuf_hasPacket(volatile SLCanBuf *buf)
+bool circbuf_hasPacket(volatile CircBuf *buf)
 {
     return buf->packets > 0;
 }
@@ -80,13 +80,13 @@ bool slcanbuf_hasPacket(volatile SLCanBuf *buf)
  * 
  * @return void
  */
-void slcanbuf_push(volatile SLCanBuf *buf, uint8_t byte)
+void circbuf_push(volatile CircBuf *buf, uint8_t byte)
 {
     buf->data[buf->head] = byte;
     if (byte == '\r') {
         buf->packets++;
     }
-    slcanbuf_incHead(buf);
+    circbuf_incHead(buf);
 }
 
 /**
@@ -96,13 +96,13 @@ void slcanbuf_push(volatile SLCanBuf *buf, uint8_t byte)
  * 
  * @return The byte popped off the buffer.  Returns 0 if the buffer is empty.
  */
-uint8_t slcanbuf_pop(volatile SLCanBuf *buf)
+uint8_t circbuf_pop(volatile CircBuf *buf)
 {
-    if (slcanbuf_isEmpty(buf)) {
+    if (circbuf_isEmpty(buf)) {
         return 0;
     }
     uint16_t tail = buf->tail;
-    slcanbuf_incTail(buf);
+    circbuf_incTail(buf);
     return buf->data[tail];
 }
 /**
@@ -114,7 +114,7 @@ uint8_t slcanbuf_pop(volatile SLCanBuf *buf)
  * 
  * @return The number of bytes put into the buffer
  */
-uint16_t slcanbuf_getPacket(volatile SLCanBuf *cbuf, uint8_t *buffer, uint16_t length)
+uint16_t circbuf_getPacket(volatile CircBuf *cbuf, uint8_t *buffer, uint16_t length)
 {
     uint16_t i;
     uint8_t byte;
@@ -122,8 +122,8 @@ uint16_t slcanbuf_getPacket(volatile SLCanBuf *cbuf, uint8_t *buffer, uint16_t l
         return 0;
     }
     i = 0;
-    while (!slcanbuf_isEmpty(cbuf) && (i < length)) {
-        byte = slcanbuf_pop(cbuf);
+    while (!circbuf_isEmpty(cbuf) && (i < length)) {
+        byte = circbuf_pop(cbuf);
         buffer[i] = byte;
         i++;
         if (byte == '\r') {

@@ -1,6 +1,5 @@
 
 #include "slcan_defines.h"
-#include "slcanbuf.h"
 
 /**
  * Parses a single text digit and returns the value
