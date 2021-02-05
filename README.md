@@ -9,8 +9,7 @@ space in the bootloader section of the MCU to write my bootloader in C++.
 
 That being said I may write a C++ wrapper for it.
 
-## Example
-For the SAMC21:
+## Microchip SAMC21 Example
 
 ### GCC Setup
 The following sets the number of bytes in the circular buffers (default 256):
@@ -64,3 +63,11 @@ void SERCOM3_Handler()
     SLCAN_Handler(SERCOM3);
 }
 ~~~~~~~~
+
+## Other MCUs
+This can be used generically as long as slcan_samc21.h or any other specific mcu include file are not included.
+The serial port will just have to be setup manually.
+
+## Contributions
+
+I welcome pull requests and bugs.
