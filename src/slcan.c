@@ -55,7 +55,7 @@ bool slcan_packet_rx(SLPacket *pkt)
     if (pkt != NULL) {
         length = circbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
         if (length > 0) {
-            ret = decodeSLPacket(buf, sizeof(buf), pkt);
+            ret = decodeSLPacket(buf, length, pkt);
             if (ret && (pkt->type != Frame)) {
                 slcan_send(pkt); // Send a reply
             }
@@ -79,9 +79,9 @@ bool slcan_frame_rx(SLCANFrame *frame)
     if (frame != NULL) {
         length = circbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
         if (length > 0) {
-            ret = decodeSLCANFrame(buf, sizeof(buf), frame);
+            ret = decodeSLCANFrame(buf, length, frame);
             if (ret == false) {
-                if (decodeSLPacket(buf, sizeof(buf), &pkt)) {
+                if (decodeSLPacket(buf, length, &pkt)) {
                     slcan_send(&pkt);
                 }
 
