@@ -966,6 +966,35 @@ FCTMF_FIXTURE_SUITE_BGN(test_slcan_decode)
         CheckSLPacket(got, expect, i);
     }
     FCT_TEST_END()
+    /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(decodeSLPacket: Takes in an allcall packet) {
+        uint8_t i;
+        uint8_t buffer[] = { 'T', '1', '4', '0', '0', '0', '0', '0', '0', '8', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '\r' };
+        SLPacket expect = {
+            .type = Frame,
+            .data = 0,
+            .cmd = 'T',
+            .frame = {
+                .id = 0x14000000,
+                .length = 8,
+                .data = { 0, 0, 0, 0, 0, 0, 0, 0 },
+                .ext = true,
+                .rtr = false,
+                .timestamp = 0,
+            },
+        };
+        SLPacket got;
+        bool ret, retexpect;
+        ret = decodeSLPacket(buffer, sizeof(buffer), &got);
+        retexpect = true;
+        fct_xchk(ret == retexpect, "Expected %s got %s", retexpect ? "TRUE" : "FALSE", ret ? "TRUE" : "FALSE");
+        CheckSLPacket(got, expect, i);
+    }
+    FCT_TEST_END()
 
 }
 FCTMF_FIXTURE_SUITE_END();

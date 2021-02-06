@@ -86,7 +86,7 @@ bool decodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame)
     if ((buf[0] == 'T') && (length >= 10)) {
         frame->ext = true;
         frame->rtr = false;
-        frame->id = decodeNumber(&buf[1], 8) &SLCAN_EXT_ID_MASK;
+        frame->id = decodeNumber(&buf[1], 8) & SLCAN_EXT_ID_MASK;
         frame->length = (uint8_t)decodeNumber(&buf[9], 1);
         if (length >= (frame->length + frame->length + 10)) {
             return decodeByteData(&buf[10], frame->length * 2, frame->data);
@@ -95,13 +95,13 @@ bool decodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame)
     } else if ((buf[0] == 'R') && (length >= 10)) {
         frame->ext = true;
         frame->rtr = true;
-        frame->id = decodeNumber(&buf[1], 8) &SLCAN_EXT_ID_MASK;
+        frame->id = decodeNumber(&buf[1], 8) & SLCAN_EXT_ID_MASK;
         frame->length = (uint8_t)decodeNumber(&buf[9], 1);
         return true;
     } else if (buf[0] == 't') {
         frame->ext = false;
         frame->rtr = false;
-        frame->id = decodeNumber(&buf[1], 3) &SLCAN_ID_MASK;
+        frame->id = decodeNumber(&buf[1], 3) & SLCAN_ID_MASK;
         frame->length = (uint8_t)decodeNumber(&buf[4], 1);
         if (length >= (frame->length + frame->length + 5)) {
             return decodeByteData(&buf[5], frame->length * 2, frame->data);
@@ -110,7 +110,7 @@ bool decodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame)
     } else if ((buf[0] == 'r')  && (length >= 5)) {
         frame->ext = false;
         frame->rtr = true;
-        frame->id = decodeNumber(&buf[1], 3) &SLCAN_ID_MASK;
+        frame->id = decodeNumber(&buf[1], 3) & SLCAN_ID_MASK;
         frame->length = (uint8_t)decodeNumber(&buf[4], 1);
         return true;
     }
