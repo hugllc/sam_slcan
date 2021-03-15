@@ -1,4 +1,5 @@
 #include "slcan_defines.h"
+#include "slcan_encode.h"
 
 /**
  * Parses a single text digit and returns the value
@@ -88,11 +89,45 @@ uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
     }
     uint16_t index = 0;
     switch (pkt->type) {
+        case Frame:
+            index = encodeSLCANFrame(buf, length, &(pkt->frame));
+            break;
+        case Bad:
+        case Open:
+        case Close:
+        case Listen:
+        case Speed:
+        default:
+            index = encodeSLReply(buf, length, pkt);
+            break;
+    }
+    return index;
+}
+
+/**
+ * 
+ * This decodes a SL Command
+ * 
+ * @param buf    The buffer to use
+ * @param length The length of the buffer
+ * @param pkt    The packet to encode
+ * 
+ * @return The number of bytes that were written to buf
+ */
+uint16_t encodeSLReply(uint8_t *buf, uint8_t length, SLPacket *pkt)
+{
+    if ((length == 0) || (buf == NULL) || (pkt == NULL)) {
+        // Packet Too Short
+        return false;
+    }
+    uint16_t index = 0;
+    switch (pkt->type) {
         case Bad:
             buf[index++] = 7;
             break;
         case Frame:
-            index = encodeSLCANFrame(buf, length, &(pkt->frame));
+            buf[index++] = 'z';
+            buf[index++] = '\r';
             break;
         case Open:
         case Close:

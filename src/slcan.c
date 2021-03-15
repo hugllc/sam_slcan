@@ -21,6 +21,30 @@ void slcan_init(void)
 }
 
 /**
+ * Sends a reply out the USB.  This is not a can reply, this is an slcan reply.
+ * 
+ * @param pkt The packet to write it in.
+ * 
+ * @return True if a packet was sent
+ */
+bool slcan_send_reply(SLPacket *pkt)
+{
+    uint16_t length;
+    uint16_t index;
+    uint8_t buf[64];
+    if (pkt != NULL) {
+        length = encodeSLReply(buf, sizeof(buf), pkt);
+        index = 0;
+        while (length > index) {
+            circbuf_push(&slcan_txbuf, buf[index]);
+            index++;
+        }
+        return length > 0;
+    }
+    return false;
+}
+
+/**
  * Reads out the tx buffer.
  * 
  * @param buf    The buffer to write to
@@ -56,9 +80,7 @@ bool slcan_packet_rx(SLPacket *pkt)
         length = circbuf_getPacket(&slcan_rxbuf, buf, sizeof(buf));
         if (length > 0) {
             ret = decodeSLPacket(buf, length, pkt);
-            if (ret && (pkt->type != Frame)) {
-                slcan_send(pkt); // Send a reply
-            }
+            slcan_send_reply(pkt); // Send a reply
         }
     }
     return ret;
@@ -81,10 +103,8 @@ bool slcan_frame_rx(SLCANFrame *frame)
         if (length > 0) {
             ret = decodeSLCANFrame(buf, length, frame);
             if (ret == false) {
-                if (decodeSLPacket(buf, length, &pkt)) {
-                    slcan_send(&pkt);
-                }
-
+                decodeSLPacket(buf, length, &pkt);
+                slcan_send_reply(&pkt);
             }
         }
     }
@@ -152,6 +172,7 @@ bool slcan_send(SLPacket *pkt)
     }
     return false;
 }
+
 /**
  * Sends a packet
  * 

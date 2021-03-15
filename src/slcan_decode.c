@@ -152,8 +152,10 @@ bool decodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt)
             break;
         case 'S':    // Speed
             if ((length > 1) && (buf[1] != '\r')) {
-                pkt->type = Speed;
                 pkt->data = decodeNumber(&buf[1], 1);
+                if (pkt->data < 9) {
+                    pkt->type = Speed;
+                }
             }
             break;
         case 'T':

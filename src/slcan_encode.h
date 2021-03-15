@@ -7,6 +7,7 @@
 
 #include "slcan_defines.h"
 
-uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *frame);
+uint16_t encodeSLPacket(uint8_t *buf, uint8_t length, SLPacket *pkt);
+uint16_t encodeSLReply(uint8_t *buf, uint8_t length, SLPacket *pkt);
 
 #endif // _SLCAN_ENCODE_H_
