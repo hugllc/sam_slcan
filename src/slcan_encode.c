@@ -1,6 +1,9 @@
 #include "slcan_defines.h"
 #include "slcan_encode.h"
 
+uint8_t encodeDigit(uint8_t digit);
+uint16_t encodeSLCANFrame(uint8_t *buf, uint8_t length, SLCANFrame *frame);
+
 /**
  * Parses a single text digit and returns the value
  * 

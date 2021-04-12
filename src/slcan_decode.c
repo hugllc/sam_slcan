@@ -1,5 +1,10 @@
 
 #include "slcan_defines.h"
+#include "slcan_decode.h"
+
+uint8_t decodeDigit(uint8_t digit);
+uint32_t decodeNumber(uint8_t *buf, uint8_t length);
+bool decodeByteData(uint8_t *buf, uint8_t length, uint8_t *data);
 
 /**
  * Parses a single text digit and returns the value
