@@ -9,6 +9,8 @@
 volatile CircBuf slcan_txbuf;
 volatile CircBuf slcan_rxbuf;
 
+bool slcan_send_reply(SLPacket *pkt);
+
 /**
  * Initializes the slcan framework
  * 
