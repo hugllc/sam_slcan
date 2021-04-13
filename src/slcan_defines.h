@@ -8,6 +8,10 @@
 #define SLCAN_EXT_ID_MASK 0x1FFFFFFF
 #define SLCAN_ID_MASK 0x7FF
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum {
     Open,
     Close,
@@ -73,6 +77,10 @@ static inline void initCANFrame(SLCANFrame *frame)
         memset(frame, 0, sizeof(SLCANFrame));
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 
 #endif // _SLCAN_DEFINES_H_

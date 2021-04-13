@@ -8,6 +8,11 @@
 
 #include "slcan.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+
 typedef enum {
     SLCAN_RX_PAD0_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(0) | SERCOM_USART_CTRLA_TXPO(1),
     SLCAN_RX_PAD1_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(1) | SERCOM_USART_CTRLA_TXPO(1),
@@ -16,6 +21,10 @@ typedef enum {
     SLCAN_RX_PAD1_TX_PAD0 = SERCOM_USART_CTRLA_RXPO(1),
     SLCAN_RX_PAD3_TX_PAD2 = SERCOM_USART_CTRLA_RXPO(3) | SERCOM_USART_CTRLA_TXPO(1),
 } slcan_uart_pads;
+
+#ifndef CPU_FREQUENCY
+# define CPU_FREQUENCY F_CPU
+#endif
 
 #define slcan_calcBaudNumber(rate) (uint16_t)(65536.0 * (1.0 - (16.0 * ((float)rate/(float)CPU_FREQUENCY))))
 
@@ -102,5 +111,8 @@ static inline void SLCAN_Handler(Sercom *usart)
 
 }
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif // _SLCAN_MCU_H_

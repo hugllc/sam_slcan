@@ -9,6 +9,10 @@
 #define CIRC_BUFFER_SIZE 256
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct {
     uint16_t head;
     uint16_t tail;
@@ -24,4 +28,9 @@ bool circbuf_hasPacket(volatile CircBuf *buf);
 void circbuf_push(volatile CircBuf *buf, uint8_t byte);
 uint8_t circbuf_pop(volatile CircBuf *buf);
 uint16_t circbuf_getPacket(volatile CircBuf *cbuf, uint8_t *buffer, uint16_t length);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif // _CIRCBUF_H_
