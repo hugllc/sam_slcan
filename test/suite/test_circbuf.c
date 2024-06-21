@@ -96,6 +96,28 @@ FCTMF_FIXTURE_SUITE_BGN(test_circbuf)
      *
      * @return void
      */
+    FCT_TEST_BGN(circbuf: head pushes tail when the buffer is overfilled) {
+        CircBuf cbuf;
+        uint8_t expect;
+        uint32_t i;
+        uint16_t count = sizeof(cbuf.data);
+        circbuf_init(&cbuf);
+        for (i = 0; i < count; i++) {
+            circbuf_push(&cbuf, i);
+        }
+        expect = 21;
+        circbuf_push(&cbuf, expect);
+        fct_xchk((cbuf.head + 1) == cbuf.tail, "Pointer: Expected %u got %u", (cbuf.head + 1), cbuf.tail);
+        fct_xchk(cbuf.data[cbuf.head - 1] == expect, "Expected %u got %u", expect, cbuf.data[cbuf.head - 1]);
+        fct_xchk(cbuf.data[cbuf.tail] == cbuf.tail, "Expected %u got %u", cbuf.tail, cbuf.data[cbuf.tail]);
+    }
+    FCT_TEST_END()
+
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
     FCT_TEST_BGN(circbuf: popping an empty buffer returns 0) {
         CircBuf cbuf;
         uint8_t ret, expect;
