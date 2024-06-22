@@ -213,5 +213,139 @@ FCTMF_FIXTURE_SUITE_BGN(test_circbuf)
     }
     FCT_TEST_END()
 
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: space left in an empty buffer) {
+        uint16_t got;
+        CircBuf cbuf;
+        uint16_t expect = CIRC_BUFFER_SIZE - 1;
+        circbuf_init(&cbuf);
+        got = circbuf_getSpace(&cbuf);
+        fct_xchk(got == expect, "Expected %u bytes returned got %u", expect, got);
+    }
+    FCT_TEST_END()
+
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: space left tail > head run almost at extreme - empty) {
+        uint16_t got;
+        CircBuf cbuf;
+        uint16_t expect = CIRC_BUFFER_SIZE - 2;
+        circbuf_init(&cbuf);
+        cbuf.head = 0;
+        cbuf.tail = CIRC_BUFFER_SIZE - 1;
+        got = circbuf_getSpace(&cbuf);
+        fct_xchk(got == expect, "Expected %u bytes returned got %u", expect, got);
+    }
+    FCT_TEST_END()
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: space left tail > head run empty in middle - full) {
+        uint16_t got;
+        CircBuf cbuf;
+        uint16_t expect = 0;
+        circbuf_init(&cbuf);
+        cbuf.head = 100;
+        cbuf.tail = 101;
+        got = circbuf_getSpace(&cbuf);
+        fct_xchk(got == expect, "Expected %u bytes returned got %u", expect, got);
+    }
+    FCT_TEST_END()
+
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: space left tail < head run empty in middle - empty) {
+        uint16_t got;
+        CircBuf cbuf;
+        uint16_t expect = CIRC_BUFFER_SIZE - 2;
+        circbuf_init(&cbuf);
+        cbuf.head = 101;
+        cbuf.tail = 100;
+        got = circbuf_getSpace(&cbuf);
+        fct_xchk(got == expect, "Expected %u bytes returned got %u", expect, got);
+    }
+    FCT_TEST_END()
+
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: space left tail < head run almost at extreme - full) {
+        uint16_t got;
+        CircBuf cbuf;
+        uint16_t expect = 0;
+        circbuf_init(&cbuf);
+        cbuf.head = CIRC_BUFFER_SIZE - 1;
+        cbuf.tail = 0;
+        got = circbuf_getSpace(&cbuf);
+        fct_xchk(got == expect, "Expected %u bytes returned got %u", expect, got);
+    }
+    FCT_TEST_END()
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: push_buffer ignores buffers too big) {
+        CircBuf cbuf;
+        uint8_t buffer[100];
+        uint16_t ret;
+        uint16_t expect = 0, expecthead = 10, expecttail = 100;
+        uint16_t i;
+        for (i = 0; i < sizeof(buffer); i++) {
+            buffer[i] = i;
+        }
+        circbuf_init(&cbuf);
+        cbuf.head = expecthead;
+        cbuf.tail = expecttail;
+        ret = circbuf_push_buffer(&cbuf, buffer, sizeof(buffer));
+        fct_xchk(cbuf.head == expecthead, "Head - Expected %u got %u", expecthead, cbuf.head);
+        fct_xchk(cbuf.tail == expecttail, "Head - Expected %u got %u", expecttail, cbuf.tail);
+        fct_xchk(ret == expect, "Head - Expected %u got %u", expect, ret);
+    }
+    FCT_TEST_END()
+     /**
+     * @brief Test
+     *
+     * @return void
+     */
+    FCT_TEST_BGN(circbuf: push_buffer pushes the right data) {
+        CircBuf cbuf;
+        uint8_t buffer[10];
+        uint16_t ret;
+        uint16_t expect = sizeof(buffer), expecthead = sizeof(buffer), expecttail = 0;
+        uint16_t i;
+        for (i = 0; i < sizeof(buffer); i++) {
+            buffer[i] = i;
+        }
+        circbuf_init(&cbuf);
+        ret = circbuf_push_buffer(&cbuf, buffer, sizeof(buffer));
+        fct_xchk(cbuf.head == expecthead, "Head - Expected %u got %u", expecthead, cbuf.head);
+        fct_xchk(cbuf.tail == expecttail, "Head - Expected %u got %u", expecttail, cbuf.tail);
+        fct_xchk(ret == expect, "Head - Expected %u got %u", expect, ret);
+        for (i = 0; i < sizeof(buffer); i++) {
+            ret = circbuf_pop(&cbuf);
+            expect = i;
+            fct_xchk(ret == expect, "Iteration %d:  Expected %u got %u", i, expect, ret);
+        }
+        expecttail = sizeof(buffer);
+        fct_xchk(cbuf.head == expecthead, "Head - Expected %u got %u", expecthead, cbuf.head);
+        fct_xchk(cbuf.tail == expecttail, "Head - Expected %u got %u", expecttail, cbuf.tail);
+    }
+    FCT_TEST_END()
+
 }
 FCTMF_FIXTURE_SUITE_END();

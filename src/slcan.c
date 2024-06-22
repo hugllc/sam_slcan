@@ -161,16 +161,10 @@ bool slcan_tx_has_byte(void)
 bool slcan_send(SLPacket *pkt)
 {
     uint16_t length;
-    uint16_t index;
     uint8_t buf[64];
     if (pkt != NULL) {
         length = encodeSLPacket(buf, sizeof(buf), pkt);
-        index = 0;
-        while (length > index) {
-            circbuf_push(&slcan_txbuf, buf[index]);
-            index++;
-        }
-        return length > 0;
+        return circbuf_push_buffer(&slcan_txbuf, buf, length) > 0;
     }
     return false;
 }

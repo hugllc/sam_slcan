@@ -26,8 +26,10 @@ void circbuf_init(volatile CircBuf *buf);
 bool circbuf_isEmpty(volatile CircBuf *buf);
 bool circbuf_hasPacket(volatile CircBuf *buf);
 void circbuf_push(volatile CircBuf *buf, uint8_t byte);
+uint16_t circbuf_push_buffer(volatile CircBuf *buf, uint8_t *bytes, uint16_t length);
 uint8_t circbuf_pop(volatile CircBuf *buf);
 uint16_t circbuf_getPacket(volatile CircBuf *cbuf, uint8_t *buffer, uint16_t length);
+uint16_t circbuf_getSpace(volatile CircBuf *buf);
 
 #ifdef __cplusplus
 }
